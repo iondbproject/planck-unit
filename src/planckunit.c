@@ -46,12 +46,6 @@
 */
 #define PLANCK_UNIT_PRINT_NEWLINE	printf("\n");PLANCK_UNIT_FLUSH;
 
-/**
-@brief		Print the result of a test as a JSON object.
-@param		state
-			A pointer to the test structure describing the result
-			of the test's execution.
-*/
 void
 planck_unit_print_result_json(
 	planck_unit_test_t		*state
@@ -71,12 +65,6 @@ planck_unit_print_result_json(
 	}
 }
 
-/**
-@brief		Print the preamble for JSON document before suite
-		execution.
-@details	This just prints the start of the suite result JSON
-		object.
-*/
 void
 planck_unit_print_preamble_json(
 	void
@@ -86,12 +74,6 @@ planck_unit_print_preamble_json(
 	PLANCK_UNIT_FLUSH;
 }
 
-/**
-@brief		Print any concluding information after the suite
-		has been executed.
-@param		suite
-			A pointer to the suite that has just been executed.
-*/
 void
 planck_unit_print_postamble_json(
 	planck_unit_suite_t	*suite
@@ -105,13 +87,6 @@ planck_unit_print_postamble_json(
 	PLANCK_UNIT_FLUSH;
 }
 
-/**
-@brief		Print the result of a test's execution in human-readable
-		format.
-@param		state
-			A pointer to the test structure describing the result
-			of the test's execution.
-*/
 void
 planck_unit_print_result_human(
 	planck_unit_test_t		*state
@@ -130,9 +105,6 @@ planck_unit_print_result_human(
 	);
 }
 
-/**
-@brief		Literally print no preamble.
-*/
 void
 planck_unit_print_preamble_none(
 	void
@@ -140,12 +112,6 @@ planck_unit_print_preamble_none(
 {
 }
 
-/**
-@brief		Print a human-readable summary of the result of a tests
-		execution.
-@param		suite
-			A pointer to the suite that has just been executed.
-*/
 void
 planck_unit_print_postamble_summary(
 	planck_unit_suite_t	*suite
@@ -168,6 +134,22 @@ planck_unit_print_postamble_summary(
 		state		= state->next;
 	}
 }
+
+planck_unit_print_funcs_t planck_unit_print_funcs_json =
+(planck_unit_print_funcs_t)
+{
+	.print_result   = planck_unit_print_result_json,
+	.print_preamble = planck_unit_print_preamble_json,
+	.print_postamble= planck_unit_print_postamble_json
+};
+
+planck_unit_print_funcs_t planck_unit_print_funcs_human =
+(planck_unit_print_funcs_t)
+{
+	.print_result   = planck_unit_print_result_human,
+	.print_preamble = planck_unit_print_preamble_none,
+	.print_postamble= planck_unit_print_postamble_summary
+};
 
 void
 planck_unit_init_suite(

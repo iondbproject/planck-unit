@@ -136,19 +136,17 @@ planck_unit_print_postamble_summary(
 }
 
 planck_unit_print_funcs_t planck_unit_print_funcs_json =
-(planck_unit_print_funcs_t)
 {
-	.print_result   = planck_unit_print_result_json,
-	.print_preamble = planck_unit_print_preamble_json,
-	.print_postamble= planck_unit_print_postamble_json
+	planck_unit_print_result_json,
+	planck_unit_print_preamble_json,
+	planck_unit_print_postamble_json
 };
 
 planck_unit_print_funcs_t planck_unit_print_funcs_human =
-(planck_unit_print_funcs_t)
 {
-	.print_result   = planck_unit_print_result_human,
-	.print_preamble = planck_unit_print_preamble_none,
-	.print_postamble= planck_unit_print_postamble_summary
+	planck_unit_print_result_human,
+	planck_unit_print_preamble_none,
+	planck_unit_print_postamble_summary
 };
 
 void
@@ -177,12 +175,7 @@ planck_unit_new_suite(
 	}
 	planck_unit_init_suite(
 		suite, 
-		(planck_unit_print_funcs_t)
-		{
-			.print_result	= planck_unit_print_result_json,
-			.print_preamble	= planck_unit_print_preamble_json,
-			.print_postamble= planck_unit_print_postamble_json
-		}
+		planck_unit_print_funcs_json
 	);
 	return suite;
 }
@@ -222,6 +215,12 @@ planck_unit_assert_true(
 {
 	if (condition)
 	{
+		/* 	Do this now, since message pointer gets replaced */
+		if (1 == state->allocated_message)
+		{
+			free(state->message);
+		}
+
 		line		= -1;
 		file		= "";
 		func		= "";

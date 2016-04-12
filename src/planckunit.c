@@ -92,7 +92,7 @@ planck_unit_print_result_human(
 	planck_unit_test_t		*state
 )
 {
-	if (-1 == state->line)
+	if (PLANCK_UNIT_SUCCESS == state->result)
 	{
 		return;
 	}
@@ -122,7 +122,7 @@ planck_unit_print_postamble_summary(
 	state			= suite->head;
 	while (NULL != state)
 	{
-		if (-1 == state->line)
+		if (PLANCK_UNIT_SUCCESS == state->result)
 		{
 			printf("*");PLANCK_UNIT_FLUSH;
 		}
@@ -215,10 +215,10 @@ planck_unit_assert_true(
 {
 	if (condition)
 	{
-		/* 	Do this now, since message pointer gets replaced */
+		/* Do this now, since message pointer gets replaced */
 		if (1 == state->allocated_message)
 		{
-			free(state->message);
+			free(message);
 		}
 
 		line		= -1;
@@ -526,12 +526,12 @@ planck_unit_run_suite(
 	{
 		state->test_func(state);
 		suite->total_tests++;
-		if (-1 == state->line)
+		if (PLANCK_UNIT_SUCCESS == state->result)
 		{
 			suite->total_passed++;
 		}
 		suite->print_functions.print_result(state);
-		if (-1 != state->line && 1==state->allocated_message)
+		if (PLANCK_UNIT_FAILURE == state->result && 1==state->allocated_message)
 		{
 			free(state->message);
 		}

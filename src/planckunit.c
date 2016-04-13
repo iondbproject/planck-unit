@@ -216,15 +216,14 @@ planck_unit_assert_true(
 	if (condition)
 	{
 		/* Do this now, since message pointer gets replaced */
-		if (1 == state->allocated_message)
-		{
-			free(message);
-		}
+		if (1 == state->allocated_message) { free(message); }
 
 		line		= -1;
 		file		= "";
 		func		= "";
 		message		= "";
+		/* Message has been freed or replaced, and is no longer allocated */
+		state->allocated_message = 0;
 		state->result	= PLANCK_UNIT_SUCCESS;
 	}
 	else

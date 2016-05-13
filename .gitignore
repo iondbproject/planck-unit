@@ -1,35 +1,17 @@
-###############################################################################
-# Author: Graeme Douglas
-# Things for git to ignore.
-# 
-# Note: If you really want to add something to git, simply git add -f <file>
-###############################################################################
-
-## All binary directories
 bin/
-
-## In general, ignore html/latex folders in doxygen directory.
-doc/doxygen/html
-doc/doxygen/latex
-
-## Ignore annoying eclipse files for those of us that use such software.
+lib/
+docs/
+.build/
 .settings
-.project
-
-## General Files
-# Compiled files
-*~
-*.com
-*class
-*.dll
-*.exe
-*.so
 *.o
-# Annoying OS files
-.DS_Store*
-Icon?
-ethumbs.db
-Thumbs.db
-*bak
-# Annoying vim files
+*.d
+*.a
 *.swp
+*.back
+*~
+.cproject
+.project
+changetracker.txt
+out.txt
+iondb.sublime-project
+iondb.sublime-workspace

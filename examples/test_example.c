@@ -22,7 +22,7 @@
 /******************************************************************************/
 
 #include <stdio.h>
-#include "../src/planckunit.h"
+#include "../src/planck_unit.h"
 
 int add_stuff1(int a, int b)
 {

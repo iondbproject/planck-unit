@@ -21,7 +21,7 @@
 */
 /******************************************************************************/
 
-#include "planckunit.h"
+#include "planck_unit.h"
 
 /**
 @brief		If possible, flush all output so far.

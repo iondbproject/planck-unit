@@ -70,8 +70,7 @@ planck_unit_print_preamble_json(
 	void
 )
 {
-	printf("{\"results\":[");
-	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("{\"results\":[");
 }
 
 void
@@ -119,20 +118,61 @@ planck_unit_print_postamble_summary(
 {
 	planck_unit_test_t	*state;
 	
+	PLANCK_UNIT_PRINT_STR("\n");
 	state			= suite->head;
 	while (NULL != state)
 	{
 		if (PLANCK_UNIT_SUCCESS == state->result)
 		{
-			printf("*");PLANCK_UNIT_FLUSH;
+			PLANCK_UNIT_PRINT_STR("*");
 		}
 		else
 		{
-			printf("F");PLANCK_UNIT_FLUSH;
+			PLANCK_UNIT_PRINT_STR("F");
 		}
 		
 		state		= state->next;
 	}
+
+	printf("\n\nTotal Tests:\t%d\n", suite->total_tests);PLANCK_UNIT_FLUSH;
+	printf("Total Passed:\t%d\n", suite->total_passed);PLANCK_UNIT_FLUSH;
+}
+
+void
+planck_unit_print_result_xml(
+	planck_unit_test_t *state
+)
+{
+	printf(
+		"<test>line:\"%d\",file:\"%s\",function:\"%s\",message:\"%s\"</test>\n",
+		state->line,
+		state->file,
+		state->func_name,
+		state->message
+	);
+	PLANCK_UNIT_FLUSH;
+}
+
+void
+planck_unit_print_preamble_xml(
+	void
+)
+{
+	PLANCK_UNIT_PRINT_STR("<suite>\n");
+}
+
+void
+planck_unit_print_postamble_xml(
+	planck_unit_suite_t *suite
+)
+{
+	printf(
+		"<summary>total_tests:\"%d\",total_passed:\"%d\"</summary>\n",
+		suite->total_tests, 
+		suite->total_passed
+	);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("</suite>\n");
 }
 
 planck_unit_print_funcs_t planck_unit_print_funcs_json =
@@ -147,6 +187,13 @@ planck_unit_print_funcs_t planck_unit_print_funcs_human =
 	planck_unit_print_result_human,
 	planck_unit_print_preamble_none,
 	planck_unit_print_postamble_summary
+};
+
+planck_unit_print_funcs_t planck_unit_print_funcs_xml =
+{
+	planck_unit_print_result_xml,
+	planck_unit_print_preamble_xml,
+	planck_unit_print_postamble_xml
 };
 
 void

@@ -174,6 +174,40 @@ planck_unit_print_postamble_summary(
 );
 
 /**
+@brief		Print the result of a test in key:value (colon separated) form,
+		with each pair listed in comma separated form.
+@param		state
+			A pointer to the test structure describing the result
+			of the test's execution.
+*/
+void
+planck_unit_print_result_xml(
+	planck_unit_test_t *suite
+);
+
+/**
+@brief		Print the preamble for the XML-like document before suite
+		execution.
+@details	This just prints the start of the suite XML tag.
+*/
+void
+planck_unit_print_preamble_xml(
+	void
+);
+
+/**
+@brief		Print any concluding information after the suite
+		has been executed. For the XML-like document, this is just the close
+		suite tag.
+@param		suite
+			A pointer to the suite that has just been executed.
+*/
+void
+planck_unit_print_postamble_xml(
+	planck_unit_suite_t *suite
+);
+
+/**
 @brief		JSON printing functions, for easy reference.
 */
 extern planck_unit_print_funcs_t planck_unit_print_funcs_json;
@@ -182,6 +216,11 @@ extern planck_unit_print_funcs_t planck_unit_print_funcs_json;
 @brief		Human readable printing functions for easy reference.
 */
 extern planck_unit_print_funcs_t planck_unit_print_funcs_human;
+
+/**
+@brief		XML-like printing functions for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_xml;
 
 /**
 @brief		A test suite for execution.

@@ -37,9 +37,14 @@ extern "C" {
 #include <string.h>
 /* If this is any sort of workstation system, don't include Arduino junk. */
 //#if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN))
-/* If we are compiling for the arduino, include the serial interface. */
+/* If we are compiling for the arduino, include the serial interface
+ * and overwrite filename constant to be blank. */
 #ifdef ARDUINO
 #include "serial_c_iface.h"
+#if defined(__FILE__)
+#undef __FILE__
+#define __FILE__ ""
+#endif
 #endif
 
 /**
@@ -208,6 +213,28 @@ planck_unit_print_postamble_xml(
 );
 
 /**
+@brief		Print the result of a test's execution in a concise format.
+@param		state
+			A pointer to the test structure describing the result
+			of the test's execution.
+*/
+void
+        planck_unit_print_result_concise(
+        planck_unit_test_t *suite
+);
+
+/**
+@brief		Print any concluding information after the suite
+		has been executed.
+@param		suite
+			A pointer to the suite that has just been executed.
+*/
+void
+        planck_unit_print_postamble_concise(
+        planck_unit_suite_t *suite
+);
+
+/**
 @brief		JSON printing functions, for easy reference.
 */
 extern planck_unit_print_funcs_t planck_unit_print_funcs_json;
@@ -223,11 +250,31 @@ extern planck_unit_print_funcs_t planck_unit_print_funcs_human;
 extern planck_unit_print_funcs_t planck_unit_print_funcs_xml;
 
 /**
+@brief      Concise-output printing functions for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_concise;
+
+/**
+@brief      Utility functions to check whether a test case
+            will be able to run properly in its environment.
+*/
+typedef struct planck_unit_check_functions
+{
+    /**> Check whether enough memory space is available for a
+         test's output to be defined and printed. */
+    int (*planck_unit_check_enough_space)(const char* message, void* expected, void* actual);
+} planck_unit_check_funcs_t;
+
+extern int planck_unit_check_string_space(const char* message, void* expected, void* actual);
+extern int planck_unit_check_int_space(const char* message, void* expected, void* actual);
+
+
+/**
 @brief		A test suite for execution.
 */
 struct planck_unit_suite
 {
-	/**> The print functions used to format the reuslt
+	/**> The print functions used to format the result
 	     of the suite's execution. */
 	planck_unit_print_funcs_t	print_functions;
 	/**> The total number of tests attempted. This number
@@ -431,6 +478,21 @@ planck_unit_destroy_suite(
 #define PLANCK_UNIT_ASSERT_TRUE(state, condition)\
 if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE__, __FILE__, __func__, "condition was false, expected true")) {return;}
 
+
+/**
+@brief		Assert that a condition is false.
+
+@param		state
+ 			The test's state information tracking
+ 			the result of the test.
+@param		condition
+ 			The condition expression to evaluate.
+ 			If this condition is false, the assertion
+ 			passes. Otherwise, the assertion fails.
+*/
+#define PLANCK_UNIT_ASSERT_FALSE(state, condition)\
+if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), !(condition), __LINE__, __FILE__, __func__, "condition was true, expected false")) {return;}
+
 /**
 @brief		Assert that a condition is false.
 
@@ -438,8 +500,8 @@ if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE_
 			The test's state information tracking
 			the result of the test.
 */
-#define PLANCK_UNIT_ASSERT_FALSE(state)\
-if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted as false")) {return;}
+#define PLANCK_UNIT_SET_FAIL(state)\
+if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted to fail")) {return;}
 
 /**
 @brief		Assert that two integers are equal.

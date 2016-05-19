@@ -4,7 +4,7 @@
 @author		Graeme Douglas
 @brief		A simple unit testing framework that emits JSON
 		as well as human readable results, optionally.
-@details	For more information, please see @ref plankunit.h.
+@details	For more information, please see @ref planck_unit.h.
 @copyright      Copyright 2015 Graeme Douglas
 @license        Licensed under the Apache License, Version 2.0 (the "License");
                 you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "planck_unit.h"
+#include "util/ramutil.h"
 
 /**
 @brief		If possible, flush all output so far.
@@ -45,6 +46,11 @@
 @brief		Print a newline.
 */
 #define PLANCK_UNIT_PRINT_NEWLINE	printf("\n");PLANCK_UNIT_FLUSH;
+
+/* The more verbose output styles are omitted when compiled on an
+   embedded device, due to memory limitations. For now, this is
+   signaled only by the ARDUINO definition. */
+#if !defined(ARDUINO)
 
 void
 planck_unit_print_result_json(
@@ -196,6 +202,135 @@ planck_unit_print_funcs_t planck_unit_print_funcs_xml =
 	planck_unit_print_postamble_xml
 };
 
+#endif
+/* Concise output style is available on both embedded devices
+   and workstation systems. */
+
+void
+planck_unit_print_result_concise(
+    planck_unit_test_t		*state
+)
+{
+    if (PLANCK_UNIT_SUCCESS == state->result) {
+        return;
+    }
+    printf(
+      "in "
+    );
+    printf(
+            "%s",
+            state->func_name
+    );
+    printf(
+            ": "
+    );
+    printf(
+            "%d",
+            state->line
+    );
+    printf(
+            ": "
+    );
+    printf(
+            "%s",
+            state->message
+    );
+    PLANCK_UNIT_FLUSH;
+    if (NULL != state->next)
+    {
+        PLANCK_UNIT_PRINT_NEWLINE;
+    }
+}
+
+void
+planck_unit_print_postamble_concise(
+    planck_unit_suite_t	*suite
+)
+{
+    printf(
+        "Tests passed"
+    );
+    printf(
+        ": "
+    );
+    printf(
+            "%d",
+            suite->total_passed
+    );
+    printf(
+            " of "
+    );
+    printf(
+            "%d",
+            suite->total_tests
+    );
+    PLANCK_UNIT_PRINT_NEWLINE;
+    PLANCK_UNIT_FLUSH;
+}
+
+planck_unit_print_funcs_t planck_unit_print_funcs_concise =
+{
+    planck_unit_print_result_concise,
+    planck_unit_print_preamble_none,
+    planck_unit_print_postamble_concise
+};
+
+/**
+@brief      Check whether enough memory space is available for a
+            string based test's output to be defined and
+            printed.
+@param      message
+            Output line surrounding the test's expected and
+            actual values.
+@param		expected
+			A pointer to the expected string data.
+@param		actual
+			A pointer to the actual string data.
+@returns    The size needed if available, otherwise 0 (false).
+*/
+int
+planck_unit_check_string_space(
+    const char*   message,
+    void*   expected,
+    void*   actual
+)
+{
+    int			message_size;
+    message_size		 = strlen(message);
+    message_size		+= strlen((char*)expected);
+    message_size		+= strlen((char*)actual);
+
+    return ((free_ram() > message_size)? message_size : 0);
+}
+
+/**
+@brief      Check whether enough memory space is available for an
+            @c int based test's output to be defined and
+            printed.
+@param      message
+            Output line surrounding the test's expected and
+            actual values.
+@param		expected
+			A pointer to the expected @c int value.
+@param		actual
+			A pointer to the actual @c int value.
+@returns    The size needed if available, otherwise 0 (false).
+*/
+int
+planck_unit_check_int_space(
+    const char*   message,
+    void*   expected,
+    void*   actual
+)
+{
+    int			message_size;
+    message_size		 = strlen(message);
+    /* Quick overestimation of characters needed to represent integer. */
+    message_size		+= 2*(4*sizeof(int) + 2);
+
+    return ((free_ram() > message_size)? message_size : 0);
+}
+
 void
 planck_unit_init_suite(
 	planck_unit_suite_t		*suite,
@@ -222,7 +357,7 @@ planck_unit_new_suite(
 	}
 	planck_unit_init_suite(
 		suite, 
-		planck_unit_print_funcs_json
+		planck_unit_print_funcs_concise
 	);
 	return suite;
 }
@@ -320,15 +455,15 @@ planck_unit_assert_int_are_equal(
 	int			message_size;
 	char			*buffer;
 	message			 =
-		"expected int %d is not equal to actual int %d";
-	message_size		 = strlen(message);
-	/* Quick overestimation of characters needed to represent integer. */
-	message_size		+= 2*(4*sizeof(int) + 2);
+		"expected int %d, got %d";
+
+    message_size     = planck_unit_check_int_space(message, &expected, &actual);
 	state->allocated_message = 1;
 	buffer			 = malloc(message_size);
-	if (NULL == buffer)
+	if (NULL == buffer || !message_size)
 	{
-		PLANCK_UNIT_PRINT_STR("ran out of memory");
+        free(buffer);
+		PLANCK_UNIT_PRINT_STR("out of memory");
 		exit(-1);
 	}
 	sprintf(buffer, message, expected, actual);
@@ -381,15 +516,15 @@ planck_unit_assert_int_are_not_equal(
 	char			*buffer;
 	
 	message			 =
-		"expected int %d is equal to actual int %d";
-	message_size		 = strlen(message);
-	/* Quick overestimation of characters needed to represent integer. */
-	message_size		+= 2*(4*sizeof(int) + 2);
+		"expected not int %d, got %d";
+
+    message_size     = planck_unit_check_int_space(message, &expected, &actual);
 	state->allocated_message = 1;
 	buffer			 = malloc(message_size);
-	if (NULL == buffer)
+	if (NULL == buffer || !message_size)
 	{
-		PLANCK_UNIT_PRINT_STR("ran out of memory");
+        free(buffer);
+		PLANCK_UNIT_PRINT_STR("out of memory");
 		exit(-1);
 	}
 	sprintf(buffer, message, expected, actual);
@@ -438,18 +573,17 @@ planck_unit_assert_str_are_equal(
 )
 {
 	const char		*message;
-	int			message_size;
+    int             message_size;
 	char			*buffer;
 	message			 =
-		"expected \\\"%s\\\" is not equal to actual \\\"%s\\\"";
-	message_size		 = strlen(message);
-	message_size		+= strlen(expected);
-	message_size		+= strlen(actual);
+		"expected \\\"%s\\\", got \\\"%s\\\"";
 	state->allocated_message = 1;
+    message_size     = planck_unit_check_string_space(message, expected, actual);
 	buffer			 = malloc(message_size);
-	if (NULL == buffer)
+	if (NULL == buffer || !message_size)
 	{
-		PLANCK_UNIT_PRINT_STR("ran out of memory");
+        free(buffer);
+		PLANCK_UNIT_PRINT_STR("out of memory");
 		exit(-1);
 	}
 	sprintf(buffer, message, expected, actual);
@@ -502,15 +636,14 @@ planck_unit_assert_str_are_not_equal(
 	int			message_size;
 	char			*buffer;
 	message			 =
-		"expected \\\"%s\\\" is equal to actual \\\"%s\\\"";
-	message_size		 = strlen(message);
-	message_size		+= strlen(expected);
-	message_size		+= strlen(actual);
+		"expected not \\\"%s\\\", got \\\"%s\\\"";
+    message_size     = planck_unit_check_string_space(message, expected, actual);
 	state->allocated_message = 1;
 	buffer			 = malloc(message_size);
-	if (NULL == buffer)
+	if (NULL == buffer || !message_size)
 	{
-		PLANCK_UNIT_PRINT_STR("ran out of memory");
+        free(buffer);
+		PLANCK_UNIT_PRINT_STR("out of memory");
 		exit(-1);
 	}
 	sprintf(buffer, message, expected, actual);
@@ -537,7 +670,7 @@ planck_unit_add_to_suite(
 	next				= malloc(sizeof(planck_unit_test_t));
 	if (NULL == next)
 	{
-		PLANCK_UNIT_PRINT_STR("ran out of memory\n");
+		PLANCK_UNIT_PRINT_STR("out of memory\n");
 		exit(-1);
 	}
 	

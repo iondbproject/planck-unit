@@ -88,13 +88,14 @@ int main(void)
 	planck_unit_suite_t	*suite;
 	
 	suite			= planck_unit_new_suite();
-	/* Uncomment the following lines to use human readable output. */
-	/*
+	/* Uncomment one of the following lines according to desired output style. */
 	planck_unit_init_suite(
 		suite,
-		planck_unit_print_funcs_human
+		/*planck_unit_print_funcs_human*/
+        /*planck_unit_print_funcs_json*/
+        /*planck_unit_print_funcs_xml*/
+        planck_unit_print_funcs_concise
 	);
-	*/
 	planck_unit_add_to_suite(suite, test_addstuff1_1);
 	planck_unit_add_to_suite(suite, test_addstuff1_2);
 	planck_unit_add_to_suite(suite, test_stringequals_success);

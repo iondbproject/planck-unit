@@ -47,10 +47,8 @@
 */
 #define PLANCK_UNIT_PRINT_NEWLINE	printf("\n");PLANCK_UNIT_FLUSH;
 
-/* The more verbose output styles are omitted when compiled on an
-   embedded device, due to memory limitations. For now, this is
-   signaled only by the ARDUINO definition. */
-#if !defined(ARDUINO)
+/* Output style depends on build-time arguments. See @ref CMakeLists.txt for information. */
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_JSON)
 
 void
 planck_unit_print_result_json(
@@ -91,6 +89,16 @@ planck_unit_print_postamble_json(
 	);
 	PLANCK_UNIT_FLUSH;
 }
+
+planck_unit_print_funcs_t planck_unit_print_funcs_json =
+        {
+                planck_unit_print_result_json,
+                planck_unit_print_preamble_json,
+                planck_unit_print_postamble_json
+        };
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN)
 
 void
 planck_unit_print_result_human(
@@ -144,6 +152,16 @@ planck_unit_print_postamble_summary(
 	printf("Total Passed:\t%d\n", suite->total_passed);PLANCK_UNIT_FLUSH;
 }
 
+planck_unit_print_funcs_t planck_unit_print_funcs_human =
+{
+	planck_unit_print_result_human,
+	planck_unit_print_preamble_none,
+	planck_unit_print_postamble_summary
+};
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_XML)
+
 void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
@@ -181,20 +199,6 @@ planck_unit_print_postamble_xml(
 	PLANCK_UNIT_PRINT_STR("</suite>\n");
 }
 
-planck_unit_print_funcs_t planck_unit_print_funcs_json =
-{
-	planck_unit_print_result_json,
-	planck_unit_print_preamble_json,
-	planck_unit_print_postamble_json
-};
-
-planck_unit_print_funcs_t planck_unit_print_funcs_human =
-{
-	planck_unit_print_result_human,
-	planck_unit_print_preamble_none,
-	planck_unit_print_postamble_summary
-};
-
 planck_unit_print_funcs_t planck_unit_print_funcs_xml =
 {
 	planck_unit_print_result_xml,
@@ -203,43 +207,41 @@ planck_unit_print_funcs_t planck_unit_print_funcs_xml =
 };
 
 #endif
-/* Concise output style is available on both embedded devices
-   and workstation systems. */
+
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
 
 void
 planck_unit_print_result_concise(
     planck_unit_test_t		*state
 )
 {
+    printf("[");
+    printf("%s", state->func_name);
+    printf(": ");
     if (PLANCK_UNIT_SUCCESS == state->result) {
-        return;
+        printf("pass");
     }
-    printf(
-      "in "
-    );
-    printf(
-            "%s",
-            state->func_name
-    );
-    printf(
-            ": "
-    );
-    printf(
-            "%d",
-            state->line
-    );
-    printf(
-            ": "
-    );
-    printf(
-            "%s",
-            state->message
-    );
+    else {
+        printf("%d", state->line);
+        printf(": ");
+        printf("%s", state->message);
+    }
+    printf("]");
     PLANCK_UNIT_FLUSH;
-    if (NULL != state->next)
-    {
-        PLANCK_UNIT_PRINT_NEWLINE;
-    }
+    PLANCK_UNIT_PRINT_NEWLINE;
+}
+
+void
+planck_unit_print_preamble_concise(
+    void
+)
+{
+    printf("[");
+    printf("[");
+    printf("Results");
+    printf("]");
+    printf("]");
+    PLANCK_UNIT_PRINT_NEWLINE;
 }
 
 void
@@ -247,23 +249,15 @@ planck_unit_print_postamble_concise(
     planck_unit_suite_t	*suite
 )
 {
-    printf(
-        "Tests passed"
-    );
-    printf(
-        ": "
-    );
-    printf(
-            "%d",
-            suite->total_passed
-    );
-    printf(
-            " of "
-    );
-    printf(
-            "%d",
-            suite->total_tests
-    );
+    printf("[");
+    printf("[");
+    printf("Passed");
+    printf(": ");
+    printf("%d", suite->total_passed);
+    printf("/");
+    printf("%d", suite->total_tests);
+    printf("]");
+    printf("]");
     PLANCK_UNIT_PRINT_NEWLINE;
     PLANCK_UNIT_FLUSH;
 }
@@ -271,9 +265,12 @@ planck_unit_print_postamble_concise(
 planck_unit_print_funcs_t planck_unit_print_funcs_concise =
 {
     planck_unit_print_result_concise,
-    planck_unit_print_preamble_none,
+    planck_unit_print_preamble_concise,
     planck_unit_print_postamble_concise
 };
+
+/* End of build-time-enabled output styles. */
+#endif
 
 /**
 @brief      Check whether enough memory space is available for a
@@ -355,10 +352,32 @@ planck_unit_new_suite(
 	{
 		return suite;
 	}
-	planck_unit_init_suite(
-		suite, 
-		planck_unit_print_funcs_concise
-	);
+
+    /* Messy preprocessor statements since output types are determined at build time.
+        Left as such (rather than value-based) as multiple options may be
+        independently defined at once in the make/build settings. */
+
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_JSON)
+    planck_unit_init_suite(
+            suite,
+            planck_unit_print_funcs_json
+    );
+#elif defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN)
+    planck_unit_init_suite(
+            suite,
+            planck_unit_print_funcs_human
+    );
+#elif defined(PLANCK_UNIT_OUTPUT_STYLE_XML)
+    planck_unit_init_suite(
+            suite,
+            planck_unit_print_funcs_xml
+    );
+#else
+    planck_unit_init_suite(
+            suite,
+            planck_unit_print_funcs_concise
+    );
+#endif
 	return suite;
 }
 

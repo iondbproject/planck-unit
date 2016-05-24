@@ -54,9 +54,6 @@ extern "C" {
 #define NULL			((void *)0)
 #endif
 
-#define PLANCK_UNIT_MODE_JSON	0
-#define PLANCK_UNIT_MODE_HUMAN	1
-
 /**
 @brief		An assertion result, either a success or a failure.
 @details	See @ref PLANCK_UNIT_FAILURE, @ref PLANCK_UNIT_SUCCESS.
@@ -114,6 +111,10 @@ typedef struct planck_unit_print_functions
 	void (*print_postamble)(planck_unit_suite_t *);
 } planck_unit_print_funcs_t;
 
+
+/* Output style depends on build-time arguments. See @ref CMakeLists.txt for information. */
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_JSON)
+
 /**
 @brief		Print the result of a test as a JSON object.
 @param		state
@@ -148,6 +149,14 @@ planck_unit_print_postamble_json(
 );
 
 /**
+@brief		JSON printing functions, for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_json;
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN)
+
+/**
 @brief		Print the result of a test's execution in human-readable
 		format.
 @param		state
@@ -177,6 +186,14 @@ void
 planck_unit_print_postamble_summary(
 	planck_unit_suite_t	*suite
 );
+
+/**
+@brief		Human readable printing functions for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_human;
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_XML)
 
 /**
 @brief		Print the result of a test in key:value (colon separated) form,
@@ -213,14 +230,32 @@ planck_unit_print_postamble_xml(
 );
 
 /**
+@brief		XML-like printing functions for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_xml;
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
+
+/**
 @brief		Print the result of a test's execution in a concise format.
 @param		state
 			A pointer to the test structure describing the result
 			of the test's execution.
 */
 void
-        planck_unit_print_result_concise(
+planck_unit_print_result_concise(
         planck_unit_test_t *suite
+);
+
+/**
+@brief		Print the preamble for the concise style before suite
+		execution.
+@details	This prints a shortcode-style opening tag.
+*/
+void
+planck_unit_print_preamble_concise(
+	void
 );
 
 /**
@@ -230,29 +265,17 @@ void
 			A pointer to the suite that has just been executed.
 */
 void
-        planck_unit_print_postamble_concise(
+planck_unit_print_postamble_concise(
         planck_unit_suite_t *suite
 );
-
-/**
-@brief		JSON printing functions, for easy reference.
-*/
-extern planck_unit_print_funcs_t planck_unit_print_funcs_json;
-
-/**
-@brief		Human readable printing functions for easy reference.
-*/
-extern planck_unit_print_funcs_t planck_unit_print_funcs_human;
-
-/**
-@brief		XML-like printing functions for easy reference.
-*/
-extern planck_unit_print_funcs_t planck_unit_print_funcs_xml;
 
 /**
 @brief      Concise-output printing functions for easy reference.
 */
 extern planck_unit_print_funcs_t planck_unit_print_funcs_concise;
+
+/* End of build-time-enabled output styles. */
+#endif
 
 /**
 @brief      Utility functions to check whether a test case
@@ -494,7 +517,7 @@ if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE_
 if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), !(condition), __LINE__, __FILE__, __func__, "condition was true, expected false")) {return;}
 
 /**
-@brief		Assert that a condition is false.
+@brief		Auto-fail a test.
 
 @param  	state
 			The test's state information tracking

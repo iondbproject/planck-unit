@@ -38,13 +38,27 @@ extern "C" {
 /* If this is any sort of workstation system, don't include Arduino junk. */
 //#if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN))
 /* If we are compiling for the arduino, include the serial interface
- * and overwrite filename constant to be blank. */
+ * and overwrite filename constant to be blank to save memory. */
 #ifdef ARDUINO
 #include "serial_c_iface.h"
 #if defined(__FILE__)
 #undef __FILE__
 #define __FILE__ ""
 #endif
+#endif
+
+/**
+@brief		Enables an output style (or several) to be used when printing results.
+@details	For now, these are determined using flags hard-coded here in the header file.
+ 				If one of these variables is not defined, its corresponding print functions
+ 				will not be included in the build, resulting in a smaller program.
+*/
+#if !defined(PLANCK_UNIT_OUTPUT_STYLE_JSON) && !defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN) && \
+	!defined (PLANCK_UNIT_OUTPUT_STYLE_XML) && !defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
+/*#define PLANCK_UNIT_OUTPUT_STYLE_JSON*/
+/*#define PLANCK_UNIT_OUTPUT_STYLE_HUMAN*/
+#define PLANCK_UNIT_OUTPUT_STYLE_XML
+/*#define PLANCK_UNIT_OUTPUT_STYLE_CONCISE*/
 #endif
 
 /**

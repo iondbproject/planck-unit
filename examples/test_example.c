@@ -88,8 +88,8 @@ int main(void)
 	planck_unit_suite_t	*suite;
 	
 	suite			= planck_unit_new_suite();
-	/* Currently unnecessary code that sets a different output style than
-		the default. (Should do at build-time.) */
+	/* Include this code, with only one of the print function sets,
+	 	in order to set a particular output style for this test suite. */
 	/*planck_unit_init_suite(
 		suite,
 		planck_unit_print_funcs_human

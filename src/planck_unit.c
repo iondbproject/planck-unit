@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "planck_unit.h"
-#include "util/ramutil.h"
 
 /**
 @brief		If possible, flush all output so far.
@@ -47,7 +46,7 @@
 */
 #define PLANCK_UNIT_PRINT_NEWLINE	printf("\n");PLANCK_UNIT_FLUSH;
 
-/* Output style depends on build-time arguments. See @ref CMakeLists.txt for information. */
+/* Output style depends on build-time arguments. For now, these will be in @ref planck_unit.h. */
 #if defined(PLANCK_UNIT_OUTPUT_STYLE_JSON)
 
 void
@@ -273,7 +272,7 @@ planck_unit_print_funcs_t planck_unit_print_funcs_concise =
 #endif
 
 /**
-@brief      Check whether enough memory space is available for a
+@brief      Quick estimation of the size of a
             string based test's output to be defined and
             printed.
 @param      message
@@ -297,11 +296,11 @@ planck_unit_check_string_space(
     message_size		+= strlen((char*)expected);
     message_size		+= strlen((char*)actual);
 
-    return ((free_ram() > message_size)? message_size : 0);
+    return message_size;
 }
 
 /**
-@brief      Check whether enough memory space is available for an
+@brief      Quick estimation of the size of an
             @c int based test's output to be defined and
             printed.
 @param      message
@@ -322,10 +321,11 @@ planck_unit_check_int_space(
 {
     int			message_size;
     message_size		 = strlen(message);
-    /* Quick overestimation of characters needed to represent integer. */
+    /* Quick overestimate assuming each int is maximum length
+    	(5 chars for 2-byte ints, or 10 chars for 4-byte ints) */
     message_size		+= 2*(4*sizeof(int) + 2);
 
-    return ((free_ram() > message_size)? message_size : 0);
+    return message_size;
 }
 
 void
@@ -353,31 +353,29 @@ planck_unit_new_suite(
 		return suite;
 	}
 
-    /* Messy preprocessor statements since output types are determined at build time.
-        Left as such (rather than value-based) as multiple options may be
-        independently defined at once in the make/build settings. */
+    /* Change default output according to which styles are included. */
 
-#if defined(PLANCK_UNIT_OUTPUT_STYLE_JSON)
+	#if defined(PLANCK_UNIT_OUTPUT_STYLE_JSON)
     planck_unit_init_suite(
             suite,
             planck_unit_print_funcs_json
     );
-#elif defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN)
+	#elif defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN)
     planck_unit_init_suite(
             suite,
             planck_unit_print_funcs_human
     );
-#elif defined(PLANCK_UNIT_OUTPUT_STYLE_XML)
+	#elif defined(PLANCK_UNIT_OUTPUT_STYLE_XML)
     planck_unit_init_suite(
             suite,
             planck_unit_print_funcs_xml
     );
-#else
+	#elif defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
     planck_unit_init_suite(
             suite,
             planck_unit_print_funcs_concise
     );
-#endif
+	#endif
 	return suite;
 }
 

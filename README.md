@@ -13,7 +13,7 @@ License
 -------
 
 This code is released under the terms of the Apache License (version 2.0).
-Please refer to the [LICENSE.md](LICENSE.md) file for more information.
+Please refer to the [LICENSE](LICENSE) file for more information.
 
 Contributors
 ------------

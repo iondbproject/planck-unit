@@ -3,7 +3,7 @@ PlanckUnit
 
 A simple, small, and extensible unit testing framework for embedded systems
 and standard OSs alike. The framework only depends on `stdio.h`, `stdlib.h`,
-and `string.h`, and specifically has helper libraries to aid use on
+and `string.h`, and has helper libraries to aid use on
 Arduino platforms. The library can be used to output unit test results
 in almost any format, and specifically has support for JSON and a
 human-friendly formats. For standard operating systems, `planckunit.c` and
@@ -13,7 +13,7 @@ License
 -------
 
 This code is released under the terms of the Apache License (version 2.0).
-Please refer to the `LICENSE` file in the root of this repository.
+Please refer to the [LICENSE.md](LICENSE.md) file for more information.
 
 Contributors
 ------------

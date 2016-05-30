@@ -31,8 +31,9 @@ of said data.
 * An _output style_ or _output format_ is one of the predefined syntax
 options to print test results in.
 
-Usage
---------
+***
+
+# Usage
 
 ## Restrictions
 
@@ -44,6 +45,7 @@ Usage
   * `<summary>`, `</summary>`
 * Some output styles may be too verbose for devices with very small memory.
 * File paths are left blank in Arduino builds (and otherwise use the absolute path).
+* Only tests that fail include full details in output (line, file, function, message).
 
 ## Configuration
 
@@ -140,14 +142,8 @@ A full code example of PlanckUnit usage is provided in `examples/test_example.c`
 JSON:
 
 ```c
-{"results":[{"error_at_line":50,"file":"[file path]\test_example.c","function":"test_addstuff1_1","message":"condition was false, expected true"},
-{"error_at_line":-1,"file":"","function":"","message":""},{"error_at_line":-1,"file":"","function":"","message":""},
-{"error_at_line":70,"file":"[file path]\test_example.c","function":"test_stringequals_failure","message":"expected \"apple\", got \"orange\""},
-{"error_at_line":-1,"file":"","function":"","message":""},{"error_at_line":-1,"file":"","function":"","message":""},
-{"error_at_line":-1,"file":"","function":"","message":""}],"total_tests":7,"total_passed":5}
+{"results":[{"error_at_line":50,"file":"[file path]\test_example.c","function":"test_addstuff1_1","message":"condition was false, expected true"},{"error_at_line":-1,"file":"","function":"","message":""},{"error_at_line":-1,"file":"","function":"","message":""},{"error_at_line":70,"file":"[file path]\test_example.c","function":"test_stringequals_failure","message":"expected \"apple\", got \"orange\""},{"error_at_line":-1,"file":"","function":"","message":""},{"error_at_line":-1,"file":"","function":"","message":""},{"error_at_line":-1,"file":"","function":"","message":""}],"total_tests":7,"total_passed":5}
 ```
-
-_NOTE: JSON output does not use line separators._
 
 Human:
 

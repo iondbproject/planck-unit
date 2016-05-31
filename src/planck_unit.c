@@ -330,8 +330,8 @@ planck_unit_assert_true(
 		}
 
 		line						= -1;
-		file						= "";
-		func						= "";
+//		file						= "";
+//		func						= "";
 		message						= "";
 		/* Message has been freed or replaced, and is no longer allocated */
 		state->allocated_message	= 0;

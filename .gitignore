@@ -73,3 +73,5 @@ Thumbs.db
 
 # Debug files
 *.dSYM/
+
+build/

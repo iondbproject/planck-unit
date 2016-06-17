@@ -48,18 +48,19 @@ extern "C" {
 #endif
 
 /**
-@brief		Enables an output style (or several) to be used when printing
+@brief		Enable an output style (or several) to be used when printing
 			results.
-@details	For now, these are determined using flags hard-coded here in the
+@details	These are determined using flags hard-coded here in the
 			header file. If one of these variables is not defined, its
 			corresponding print functions will not be included in the build,
-			resulting in a smaller program.
+			resulting in a smaller program. The @c -DJENKINS_BUILD CMake
+			option enables XML format; Human format is used by default.
 */
 #if !defined(PLANCK_UNIT_OUTPUT_STYLE_JSON) && !defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN) && \
 	!defined (PLANCK_UNIT_OUTPUT_STYLE_XML) && !defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
 /*#define PLANCK_UNIT_OUTPUT_STYLE_JSON*/
-/*#define PLANCK_UNIT_OUTPUT_STYLE_HUMAN*/
-#define PLANCK_UNIT_OUTPUT_STYLE_XML
+#define PLANCK_UNIT_OUTPUT_STYLE_HUMAN
+/*#define PLANCK_UNIT_OUTPUT_STYLE_XML*/
 /*#define PLANCK_UNIT_OUTPUT_STYLE_CONCISE*/
 #endif
 

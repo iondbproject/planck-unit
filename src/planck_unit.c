@@ -119,10 +119,10 @@ planck_unit_print_postamble_summary(
 		state = state->next;
 	}
 
-	printf("Total Passed:\t%d\n", suite->total_passed);
+	printf("\n\nTotal Passed:\t%d\n", suite->total_passed);
 	PLANCK_UNIT_FLUSH;
 
-	printf("\n\nTotal Tests:\t%d\n", suite->total_tests);
+	printf("Total Tests:\t%d\n", suite->total_tests);
 	PLANCK_UNIT_FLUSH;
 }
 

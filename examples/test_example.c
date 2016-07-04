@@ -126,13 +126,14 @@ main(
 		planck_unit_print_funcs_xml
 		planck_unit_print_funcs_concise
 	);*/
-	planck_unit_add_to_suite(suite, test_addstuff1_1);
-	planck_unit_add_to_suite(suite, test_addstuff1_2);
-	planck_unit_add_to_suite(suite, test_stringequals_success);
-	planck_unit_add_to_suite(suite, test_stringequals_failure);
-	planck_unit_add_to_suite(suite, test_stringnotequals_success);
-	planck_unit_add_to_suite(suite, test_intequals_success);
-	planck_unit_add_to_suite(suite, test_intnotequals_success);
+	planck_unit_init_suite(suite, planck_unit_print_funcs_xml);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_addstuff1_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_addstuff1_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_stringequals_success);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_stringequals_failure);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_stringnotequals_success);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_intequals_success);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_intnotequals_success);
 	planck_unit_run_suite(suite);
 	planck_unit_destroy_suite(suite);
 	return 0;

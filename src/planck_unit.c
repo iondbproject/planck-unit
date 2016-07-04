@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "planck_unit.h"
+#include "ion_time/ion_time.h"
 
 /**
 @brief		If possible, flush all output so far.
@@ -53,7 +54,7 @@ void
 planck_unit_print_result_json(
 	planck_unit_test_t *state
 ) {
-	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"function\":\"%s\",\"message\":\"%s\"}", state->line, state->file, state->func_name, state->message);
+	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"function\":\"%s\",\"time\":\"%lf\",\"message\":\"%s\"}", state->line, state->file, state->func_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 
 	if (NULL != state->next) {
@@ -63,7 +64,7 @@ planck_unit_print_result_json(
 
 void
 planck_unit_print_preamble_json(
-	void
+	planck_unit_suite_t *suite
 ) {
 	PLANCK_UNIT_PRINT_STR("{\"results\":[");
 }
@@ -91,12 +92,12 @@ planck_unit_print_result_human(
 		return;
 	}
 
-	printf("in function '%s', at %s:%d: %s\n", state->func_name, state->file, state->line, state->message);
+	printf("in function '%s', at %s:%d: %s, time:%lf ms\n", state->func_name, state->file, state->line, state->message, state->total_time);
 }
 
 void
 planck_unit_print_preamble_none(
-	void
+	planck_unit_suite_t *suite
 ) {}
 
 void
@@ -137,15 +138,41 @@ void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
-	printf("<test>line:\"%d\",file:\"%s\",function:\"%s\",message:\"%s\"</test>\n", state->line, state->file, state->func_name, state->message);
+	printf("<test>line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lf\",message:\"%s\"</test>\n", state->line, state->file, state->func_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 }
 
 void
 planck_unit_print_preamble_xml(
-	void
+	planck_unit_suite_t *suite
 ) {
-	PLANCK_UNIT_PRINT_STR("<suite>\n");
+	planck_unit_test_t *state;
+	int test_count = 0;
+
+	printf("<planckmeta>\n");
+	PLANCK_UNIT_FLUSH;
+
+	state = suite->head;
+
+	while (NULL != state) {
+		test_count++;
+		state = state->next;
+	}
+
+	printf("<testcount>%d</testcount>\n", test_count);
+	PLANCK_UNIT_FLUSH;
+
+	state = suite->head;
+
+	while(NULL != state) {
+		printf("<testname>%s</testname>\n", state->func_name);
+		PLANCK_UNIT_FLUSH;
+
+		state = state->next;
+	}
+
+	printf("</planckmeta>\n");
+	PLANCK_UNIT_FLUSH;
 }
 
 void
@@ -189,7 +216,7 @@ planck_unit_print_result_concise(
 
 void
 planck_unit_print_preamble_concise(
-	void
+	planck_unit_suite_t *suite
 ) {
 	printf("[");
 	printf("[");
@@ -559,7 +586,8 @@ planck_unit_assert_str_are_not_equal(
 void
 planck_unit_add_to_suite(
 	planck_unit_suite_t		*suite,
-	planck_unit_test_func_t test_func
+	planck_unit_test_func_t test_func,
+	char *func_name
 ) {
 	planck_unit_test_t *next;
 
@@ -574,6 +602,7 @@ planck_unit_add_to_suite(
 	next->next				= NULL;
 	next->suite				= suite;
 	next->allocated_message = 0;
+	next->func_name			= func_name;
 
 	if (NULL == suite->head) {
 		suite->tail = next;
@@ -590,12 +619,14 @@ planck_unit_run_suite(
 	planck_unit_suite_t *suite
 ) {
 	planck_unit_test_t *state;
+	double start_time, end_time, total_time;
 
 	state = suite->head;
 
-	suite->print_functions.print_preamble();
+	suite->print_functions.print_preamble(suite);
 
 	while (NULL != state) {
+		start_time = ion_time();
 		state->test_func(state);
 		suite->total_tests++;
 
@@ -603,6 +634,8 @@ planck_unit_run_suite(
 			suite->total_passed++;
 		}
 
+		end_time = ion_time();
+		state->total_time = (end_time-start_time);
 		suite->print_functions.print_result(state);
 
 		if ((PLANCK_UNIT_FAILURE == state->result) && (1 == state->allocated_message)) {

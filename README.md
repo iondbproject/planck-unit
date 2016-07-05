@@ -114,8 +114,8 @@ planck_unit_init_suite(
 Adding tests to a suite:
 
 ```c
-planck_unit_add_to_suite(suite, test_foo);
-planck_unit_add_to_suite(suite, test_bar);
+PLANCK_UNIT_ADD_TO_SUITE(suite, test_foo);
+PLANCK_UNIT_ADD_TO_SUITE(suite, test_bar);
 // ...
 ```
 

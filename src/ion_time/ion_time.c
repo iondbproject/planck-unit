@@ -31,7 +31,7 @@ ion_time(){
 		return (double)((clock()/CLOCKS_PER_SEC)*1000);
 
 	#elif defined (__unix__)||defined(__APPLE__)&&defined (__MACH__)
-		return (double)((clock()/CLOCKS_PER_SEC)*1000);
+		return (((double) clock()/CLOCKS_PER_SEC)*1000);
 
 	#elif defined (__MACH__)&& defined(__APPLE__)
 		return (double) ((AbsoluteToNanoseconds((mach_absolute_time())))*1000000);

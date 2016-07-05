@@ -28,6 +28,10 @@
 #ifndef PLANCKUNIT_H
 #define PLANCKUNIT_H
 
+#if defined(ARDUINO)
+#include "serial_c_iface.h"
+#endif
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -40,7 +44,6 @@ extern "C" {
 /* If we are compiling for the arduino, include the serial interface
  * and overwrite filename constant to be blank to save memory. */
 #if defined(ARDUINO)
-#include "serial_c_iface.h"
 #if defined(__FILE__)
 #undef __FILE__
 #define __FILE__ ""

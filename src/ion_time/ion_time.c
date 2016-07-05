@@ -26,53 +26,21 @@
 double
 ion_time(){
 	#if defined(ARDUINO)
-		return arduino_time();
+		return (double)(millis());
 
 	#elif defined(WIN32)||defined(_WIN32)||defined(__WIN32)
-		return windows_time();
+		return (double)((clock()/CLOCKS_PER_SEC)*1000);
 
 	#elif defined (__unix__)||defined(__APPLE__)&&defined (__MACH__)
-		return unix_time();
+		return (double)((clock()/CLOCKS_PER_SEC)*1000);
 
 	#elif defined (__MACH__)&& defined(__APPLE__)
-		return mach_time();
+		return (double) ((AbsoluteToNanoseconds((mach_absolute_time())))*1000000);
 
 	#elif defined(__CYGWIN)
-		return cygwin_time();
+		struct timeval time;
+		gettimeofday(&time, NULL);
+		return (double) (time.tv_sec*1000);
 
 	#endif
 }
-
-#if defined(ARDUINO)
-double
-arduino_time(){
-	return (double)(millis());
-}
-
-#elif defined(WIN32)||defined(_WIN32)||defined(__WIN32)
-double
-windows_time(){
-	return (double)((clock()/CLOCKS_PER_SEC)*1000);
-}
-
-#elif defined (__unix__)||defined(__APPLE__)&&defined (__MACH__)
-double
-unix_time(){
-	return (double)((clock()/CLOCKS_PER_SEC)*1000);
-}
-
-#elif defined (__MACH__)&& defined(__APPLE__)
-double
-mach_time(){
-	return (double) ((AbsoluteToNanoseconds((mach_absolute_time())))*1000000);
-}
-
-#elif defined(__CYGWIN)
-double
-cygwin_time(){
-	struct timeval time;
-	gettimeofday(&time, NULL);
-	return (double) (time.tv_sec*1000);
-}
-
-#endif

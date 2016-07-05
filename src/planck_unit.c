@@ -92,7 +92,7 @@ planck_unit_print_result_human(
 		return;
 	}
 
-	printf("in function '%s', at %s:%d: %s, time:%lf ms\n", state->func_name, state->file, state->line, state->message, state->total_time);
+	printf("in function '%s', at %s:%d: %s, time: %lf ms\n", state->func_name, state->file, state->line, state->message, state->total_time);
 }
 
 void
@@ -149,30 +149,21 @@ planck_unit_print_preamble_xml(
 	planck_unit_test_t *state;
 	int test_count = 0;
 
-	printf("<planckmeta>\n");
-	PLANCK_UNIT_FLUSH;
-
-	state = suite->head;
-
-	while (NULL != state) {
-		test_count++;
-		state = state->next;
-	}
-
-	printf("<testcount>%d</testcount>\n", test_count);
-	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("<planckmeta>\n");
 
 	state = suite->head;
 
 	while(NULL != state) {
+		test_count++;
 		printf("<testname>%s</testname>\n", state->func_name);
 		PLANCK_UNIT_FLUSH;
 
 		state = state->next;
 	}
 
-	printf("</planckmeta>\n");
+	printf("<testcount>%d</testcount>\n", test_count);
 	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("</planckmeta>\n");
 }
 
 void
@@ -619,7 +610,7 @@ planck_unit_run_suite(
 	planck_unit_suite_t *suite
 ) {
 	planck_unit_test_t *state;
-	double start_time, end_time, total_time;
+	double start_time, end_time;
 
 	state = suite->head;
 
@@ -628,14 +619,14 @@ planck_unit_run_suite(
 	while (NULL != state) {
 		start_time = ion_time();
 		state->test_func(state);
+		end_time = ion_time();
 		suite->total_tests++;
 
 		if (PLANCK_UNIT_SUCCESS == state->result) {
 			suite->total_passed++;
 		}
 
-		end_time = ion_time();
-		state->total_time = (end_time-start_time);
+		state->total_time = end_time-start_time;
 		suite->print_functions.print_result(state);
 
 		if ((PLANCK_UNIT_FAILURE == state->result) && (1 == state->allocated_message)) {

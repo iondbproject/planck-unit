@@ -126,7 +126,6 @@ main(
 		planck_unit_print_funcs_xml
 		planck_unit_print_funcs_concise
 	);*/
-	planck_unit_init_suite(suite, planck_unit_print_funcs_xml);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_addstuff1_1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_addstuff1_2);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_stringequals_success);

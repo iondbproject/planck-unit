@@ -48,39 +48,4 @@
 double
 ion_time();
 
-/**
-@brief		A time function designed for Arduinos.
-@returns	Current time in milliseconds.
-*/
-double
-arduino_time();
-
-/**
-@brief		A time function designed for Windows operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-windows_time();
-
-/**
-@brief		A time function designed for Unix operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-unix_time();
-
-/**
-@brief		A time function designed for Mach operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-mach_time();
-
-/**
-@brief		A time function designed for Cygwin operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-cygwin_time();
-
 #endif //PLANCKUNIT_ION_TIME_H

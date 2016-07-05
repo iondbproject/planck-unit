@@ -44,6 +44,7 @@ extern "C" {
 /* If we are compiling for the arduino, include the serial interface
  * and overwrite filename constant to be blank to save memory. */
 #if defined(ARDUINO)
+#if defined(__FILE__)
 #undef __FILE__
 #define __FILE__ ""
 #endif

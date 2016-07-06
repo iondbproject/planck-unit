@@ -25,21 +25,21 @@
 double
 ion_time(){
 #if defined(ARDUINO)
-	return ((double) millis() / 1000);
+	return (double)(millis());
 
 #elif defined(WIN32)||defined(_WIN32)||defined(__WIN32)
-	return ((double) clock()/CLOCKS_PER_SEC);
+	return ((double) clock()/CLOCKS_PER_SEC)*1000;
 
 #elif defined (__unix__)||defined(__APPLE__)&&defined (__MACH__)
-	return ((double) clock()/CLOCKS_PER_SEC);
+	return ((double) clock()/CLOCKS_PER_SEC)*1000;
 
 #elif defined (__MACH__)&& defined(__APPLE__)
-	return ((double) AbsoluteToNanoseconds((mach_absolute_time())))*1000;
+	return ((double) AbsoluteToNanoseconds((mach_absolute_time())))*1000000;
 
 #elif defined(__CYGWIN)
 	struct timeval time;
 	gettimeofday(&time, NULL);
-	return (double) (time.tv_sec);
+	return (double) (time.tv_sec*1000);
 
 #endif
 }

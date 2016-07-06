@@ -53,7 +53,7 @@ void
 planck_unit_print_result_json(
 	planck_unit_test_t *state
 ) {
-	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"function\":\"%s\",\"time\":\"%lf\",\"message\":\"%s\"}", state->line, state->file, state->func_name, state->total_time, state->message);
+	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"function\":\"%s\",\"time\":\"%lu\",\"message\":\"%s\"}", state->line, state->file, state->func_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 
 	if (NULL != state->next) {

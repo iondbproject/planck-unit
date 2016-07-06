@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "planck_unit.h"
-#include "ion_time/ion_time.h"
 
 /**
 @brief		If possible, flush all output so far.
@@ -138,7 +137,9 @@ void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
-	printf("<test>line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lf\",message:\"%s\"</test>\n", state->line, state->file, state->func_name, state->total_time, state->message);
+	printf(
+		"<test>name:\"%s\",line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lf\",message:\"%s\"</test>\n", 
+		state->base_name, state->line, state->file, state->func_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 }
 
@@ -593,7 +594,7 @@ planck_unit_add_to_suite(
 	next->next				= NULL;
 	next->suite				= suite;
 	next->allocated_message = 0;
-	next->func_name			= func_name;
+	next->base_name			= func_name;
 
 	if (NULL == suite->head) {
 		suite->tail = next;

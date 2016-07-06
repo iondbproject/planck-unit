@@ -23,6 +23,10 @@
 #if !defined(PLANCKUNIT_ION_TIME_H)
 #define PLANCKUNIT_ION_TIME_H
 
+#if defined(ARDUINO)
+#include <Arduino.h>
+#endif
+
 #if defined(WIN32)||defined(_WIN32)||defined(__WIN32)
 #include <Windows.h>
 #include <time.h>

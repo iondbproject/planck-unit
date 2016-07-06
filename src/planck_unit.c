@@ -156,7 +156,7 @@ planck_unit_print_preamble_xml(
 
 	while(NULL != state) {
 		test_count++;
-		printf("<testname>%s</testname>\n", state->func_name);
+		printf("<testname>%s</testname>\n", state->base_name);
 		PLANCK_UNIT_FLUSH;
 
 		state = state->next;

@@ -40,7 +40,7 @@
 
 /**
 @brief		A general time function that can be used by any operating system.
-@returns	Current time in milliseconds.
+@returns	Current time in seconds.
 */
 double
 ion_time();

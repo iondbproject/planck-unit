@@ -63,7 +63,7 @@ extern "C" {
 	!defined (PLANCK_UNIT_OUTPUT_STYLE_XML) && !defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
 /*#define PLANCK_UNIT_OUTPUT_STYLE_JSON*/
 #define PLANCK_UNIT_OUTPUT_STYLE_HUMAN
-/*#define PLANCK_UNIT_OUTPUT_STYLE_XML*/
+//#define PLANCK_UNIT_OUTPUT_STYLE_XML
 /*#define PLANCK_UNIT_OUTPUT_STYLE_CONCISE*/
 #endif
 
@@ -123,7 +123,7 @@ typedef struct planck_unit_print_functions {
 	     this. Whatever is printed here is output before any tests are
 	     executed. */
 	void (*print_preamble)(
-		void
+		planck_unit_suite_t *suite
 	);
 
 	/**> Following all tests have been executed, this function
@@ -158,7 +158,7 @@ planck_unit_print_result_json(
 */
 void
 planck_unit_print_preamble_json(
-	void
+	planck_unit_suite_t *suite
 );
 
 /**
@@ -197,7 +197,7 @@ planck_unit_print_result_human(
 */
 void
 planck_unit_print_preamble_none(
-	void
+	planck_unit_suite_t *suite
 );
 
 /**
@@ -238,7 +238,7 @@ planck_unit_print_result_xml(
 */
 void
 planck_unit_print_preamble_xml(
-	void
+	planck_unit_suite_t *suite
 );
 
 /**
@@ -279,7 +279,7 @@ planck_unit_print_result_concise(
 */
 void
 planck_unit_print_preamble_concise(
-	void
+	planck_unit_suite_t *suite
 );
 
 /**
@@ -381,7 +381,7 @@ struct planck_unit_suite {
 				of the function this pointer is associated with.
 */
 typedef void (*planck_unit_test_func_t)(
-	planck_unit_test_t *test
+	planck_unit_test_t 	*test
 );
 
 /**
@@ -420,6 +420,8 @@ struct planck_unit_test {
 	     allocated, the message will be immediately freed once the
 	     execution has completed. */
 	char allocated_message;
+	/**> The pointer to the number of milliseconds taken to execute the function. */
+	double					total_time;
 };
 
 /* Do not call these methods directly, but instead use public macros below. */
@@ -526,8 +528,11 @@ planck_unit_new_suite(
 void
 planck_unit_add_to_suite(
 	planck_unit_suite_t		*suite,
-	planck_unit_test_func_t test_func
+	planck_unit_test_func_t test_func,
+	char *func_name
 );
+
+#define PLANCK_UNIT_ADD_TO_SUITE(suite, test_func) planck_unit_add_to_suite((suite), (test_func), #test_func)
 
 /**
 @brief		Execute the test suite.

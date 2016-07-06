@@ -35,6 +35,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ion_time/ion_time.h"
 /* If this is any sort of workstation system, don't include Arduino junk. */
 /* #if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN)) */
 /* If we are compiling for the arduino, include the serial interface
@@ -398,10 +399,11 @@ struct planck_unit_test {
 	/**> The name of the file to which a failing test belongs.
 	     Otherwise will be set to the empty string, @c "". */
 	const char	*file;
-	/**> If the test failed, this will be set to the name of the
-	     test function which failed. Otherwise this will be set
-	     to the empty string, @c "". */
+	/**> This is set to the function name of the 
+		 last assertion in a test case. */
 	const char *func_name;
+	/**> This is set to the initial entry point of a test case. */
+	const char *base_name;
 	/**> If the test failed, a failure message describing
 	     the assertion that failed will be contained here.
 	     Otherwise, this will point to the empty string, "". */

@@ -42,7 +42,7 @@
 @brief		A general time function that can be used by any operating system.
 @returns	Current time in milliseconds.
 */
-double
+unsigned long
 ion_time();
 
 #endif //PLANCKUNIT_ION_TIME_H

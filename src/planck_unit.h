@@ -423,7 +423,7 @@ struct planck_unit_test {
 	     execution has completed. */
 	char allocated_message;
 	/**> The pointer to the number of milliseconds taken to execute the function. */
-	double					total_time;
+	unsigned long					total_time;
 };
 
 /* Do not call these methods directly, but instead use public macros below. */

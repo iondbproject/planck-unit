@@ -91,7 +91,7 @@ planck_unit_print_result_human(
 		return;
 	}
 
-	printf("in function '%s', at %s:%d: %s, time: %lf ms\n", state->func_name, state->file, state->line, state->message, state->total_time);
+	printf("FAILURE: in function '%s', at %s:%d: %s, time: %lu ms\n", state->func_name, state->file, state->line, state->message, state->total_time);
 }
 
 void
@@ -138,7 +138,7 @@ planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
 	printf(
-		"<test>name:\"%s\",line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lf\",message:\"%s\"</test>\n", 
+		"<test>name:\"%s\",line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lu\",message:\"%s\"</test>\n", 
 		state->base_name, state->line, state->file, state->func_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 }

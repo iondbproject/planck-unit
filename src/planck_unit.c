@@ -611,7 +611,7 @@ planck_unit_run_suite(
 	planck_unit_suite_t *suite
 ) {
 	planck_unit_test_t *state;
-	double start_time, end_time;
+	unsigned long start_time, end_time;
 
 	state = suite->head;
 

@@ -28,13 +28,13 @@ ion_time(){
 	return (unsigned long) (millis());
 
 #elif defined(WIN32)||defined(_WIN32)||defined(__WIN32)
-	return (unsigned long) ((double) clock()/CLOCKS_PER_SEC)*1000;
+	return (unsigned long) (((double) clock()/CLOCKS_PER_SEC)*1000);
 
 #elif defined (__unix__)||defined(__APPLE__)&&defined (__MACH__)
-	return (unsigned long) ((double) clock()/CLOCKS_PER_SEC)*1000;
+	return (unsigned long) (((double) clock()/CLOCKS_PER_SEC)*1000);
 
 #elif defined (__MACH__)&& defined(__APPLE__)
-	return (unsigned long) ((double) AbsoluteToNanoseconds((mach_absolute_time())))*1000000;
+	return (unsigned long) (((double) AbsoluteToNanoseconds((mach_absolute_time())))*1000000);
 
 #elif defined(__CYGWIN)
 	struct timeval time;

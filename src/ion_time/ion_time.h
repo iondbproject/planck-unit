@@ -3,8 +3,8 @@
 @file
 @author		Dana Klamut
 @brief		A simple time API used to determine the length of time required
- 			to run PlanckUnit tests, regardless of the operating
- 			system being used.
+			to run PlanckUnit tests, regardless of the operating
+			system being used.
 @license	Licensed under the Apache License, Version 2.0 (the "License");
 			you may not use this file except in compliance with the License.
 			You may obtain a copy of the License at
@@ -27,14 +27,14 @@
 #include <Arduino.h>
 #endif
 
-#if defined(WIN32)||defined(_WIN32)||defined(__WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #include <Windows.h>
 #include <time.h>
 
-#elif defined (__unix__)||defined(__APPLE__)&&defined (__MACH__)
+#elif defined (__unix__) || defined(__APPLE__) && defined (__MACH__)
 #include <time.h>
 
-#elif defined (__MACH__)&& defined(__APPLE__)
+#elif defined (__MACH__) && defined(__APPLE__)
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 
@@ -47,6 +47,7 @@
 @returns	Current time in milliseconds.
 */
 unsigned long
-ion_time();
+ion_time(
+);
 
-#endif //PLANCKUNIT_ION_TIME_H
+#endif /* PLANCKUNIT_ION_TIME_H */

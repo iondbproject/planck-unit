@@ -34,7 +34,7 @@
 			A null-terminated character string (a pointer
 			to the character array describing the string).
 */
-#define PLANCK_UNIT_PRINT_STR(s)	printf(s);PLANCK_UNIT_FLUSH;
+#define PLANCK_UNIT_PRINT_STR(s) printf(s);PLANCK_UNIT_FLUSH;
 
 /**
 @brief		Print a comma.
@@ -137,9 +137,7 @@ void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
-	printf(
-		"<test>name:\"%s\",line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lu\",message:\"%s\"</test>\n", 
-		state->base_name, state->line, state->file, state->func_name, state->total_time, state->message);
+	printf("<test>name:\"%s\",line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lu\",message:\"%s\"</test>\n", state->base_name, state->line, state->file, state->func_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 }
 
@@ -147,14 +145,14 @@ void
 planck_unit_print_preamble_xml(
 	planck_unit_suite_t *suite
 ) {
-	planck_unit_test_t *state;
-	int test_count = 0;
+	planck_unit_test_t	*state;
+	int					test_count = 0;
 
 	PLANCK_UNIT_PRINT_STR("<planckmeta>\n");
 
 	state = suite->head;
 
-	while(NULL != state) {
+	while (NULL != state) {
 		test_count++;
 		printf("<testname>%s</testname>\n", state->base_name);
 		PLANCK_UNIT_FLUSH;
@@ -263,11 +261,15 @@ planck_unit_check_int_space(
 	void		*expected,
 	void		*actual
 ) {
+	/* This marks them as UNUSED */
+	(void) expected;
+	(void) actual;
+
 	int message_size;
 
 	message_size	= strlen(message);
 	/* Quick overestimate assuming each int is maximum length
-	    (5 chars for 2-byte ints, or 10 chars for 4-byte ints) */
+		(5 chars for 2-byte ints, or 10 chars for 4-byte ints) */
 	message_size	+= 2 * (4 * sizeof(int) + 2);
 
 	return message_size;
@@ -350,8 +352,8 @@ planck_unit_assert_true(
 		}
 
 		line						= -1;
-//		file						= "";
-//		func						= "";
+/*		file						= ""; */
+/*		func						= ""; */
 		message						= "";
 		/* Message has been freed or replaced, and is no longer allocated */
 		state->allocated_message	= 0;
@@ -579,7 +581,7 @@ void
 planck_unit_add_to_suite(
 	planck_unit_suite_t		*suite,
 	planck_unit_test_func_t test_func,
-	char *func_name
+	char					*func_name
 ) {
 	planck_unit_test_t *next;
 
@@ -610,24 +612,24 @@ void
 planck_unit_run_suite(
 	planck_unit_suite_t *suite
 ) {
-	planck_unit_test_t *state;
-	volatile unsigned long start_time, end_time;
+	planck_unit_test_t		*state;
+	volatile unsigned long	start_time, end_time;
 
 	state = suite->head;
 
 	suite->print_functions.print_preamble(suite);
 
 	while (NULL != state) {
-		start_time = ion_time();
+		start_time	= ion_time();
 		state->test_func(state);
-		end_time = ion_time();
+		end_time	= ion_time();
 		suite->total_tests++;
 
 		if (PLANCK_UNIT_SUCCESS == state->result) {
 			suite->total_passed++;
 		}
 
-		state->total_time = end_time-start_time;
+		state->total_time = end_time - start_time;
 		suite->print_functions.print_result(state);
 
 		if ((PLANCK_UNIT_FAILURE == state->result) && (1 == state->allocated_message)) {

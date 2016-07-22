@@ -23,6 +23,8 @@
 
 #include "planck_unit.h"
 
+jmp_buf planck_unit_longjmp_env;
+
 /**
 @brief		If possible, flush all output so far.
 */
@@ -97,7 +99,10 @@ planck_unit_print_result_human(
 void
 planck_unit_print_preamble_none(
 	planck_unit_suite_t *suite
-) {}
+) {
+	/* Mark this param unused */
+	(void) suite;
+}
 
 void
 planck_unit_print_postamble_summary(
@@ -621,7 +626,9 @@ planck_unit_run_suite(
 
 	while (NULL != state) {
 		start_time	= ion_time();
-		state->test_func(state);
+		if(0 == setjmp(planck_unit_longjmp_env)) {
+			state->test_func(state);
+		}
 		end_time	= ion_time();
 		suite->total_tests++;
 

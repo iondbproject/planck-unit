@@ -39,11 +39,9 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <setjmp.h>
 #include "ion_time/ion_time.h"
-/* If this is any sort of workstation system, don't include Arduino junk. */
-/* #if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN)) */
-/* If we are compiling for the arduino, include the serial interface
- * and overwrite filename constant to be blank to save memory. */
+/* If we are compiling for the arduino, overwrite filename constant to be blank to save memory. */
 #if defined(ARDUINO)
 #if defined(__FILE__)
 #undef __FILE__
@@ -74,6 +72,12 @@ extern "C" {
 #if !defined(NULL)
 #define NULL ((void *) 0)
 #endif
+
+/**
+@brief		This is used to the jump environment used to exit,
+			in the case of a failed assertion.
+*/
+extern jmp_buf planck_unit_longjmp_env;
 
 /**
 @brief		An assertion result, either a success or a failure.
@@ -571,7 +575,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_TRUE(state, condition) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE__, __FILE__, __func__, "condition was false, expected true")) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -587,7 +591,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_FALSE(state, condition) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), !(condition), __LINE__, __FILE__, __func__, "condition was true, expected false")) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -599,7 +603,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_SET_FAIL(state) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted to fail")) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -614,7 +618,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -630,7 +634,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_not_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -646,7 +650,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -664,7 +668,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_STR_ARE_NOT_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_not_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 #ifdef  __cplusplus

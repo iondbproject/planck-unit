@@ -625,11 +625,13 @@ planck_unit_run_suite(
 	suite->print_functions.print_preamble(suite);
 
 	while (NULL != state) {
-		start_time	= ion_time();
-		if(0 == setjmp(planck_unit_longjmp_env)) {
+		start_time = ion_time();
+
+		if (0 == setjmp(planck_unit_longjmp_env)) {
 			state->test_func(state);
 		}
-		end_time	= ion_time();
+
+		end_time = ion_time();
 		suite->total_tests++;
 
 		if (PLANCK_UNIT_SUCCESS == state->result) {

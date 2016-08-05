@@ -29,7 +29,7 @@
 #define PLANCKUNIT_H
 
 #if defined(ARDUINO)
-#include "serial_c_iface.h"
+#include "../../../serial/serial_c_iface.h"
 #endif
 
 #ifdef  __cplusplus

@@ -93,7 +93,7 @@ planck_unit_print_result_human(
 		return;
 	}
 
-	printf("FAILURE: in function '%s', at %s:%d: %s, time: %lu ms\n", state->func_name, state->file, state->line, state->message, state->total_time);
+	printf("FAILURE: in function '%s' (%s), at %s:%d: %s, time: %lu ms\n", state->func_name, state->base_name, state->file, state->line, state->message, state->total_time);
 }
 
 void

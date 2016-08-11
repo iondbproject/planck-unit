@@ -401,8 +401,8 @@ planck_unit_assert_true(
 planck_unit_result_t
 planck_unit_assert_int_are_equal(
 	planck_unit_test_t	*state,
-	int					expected,
-	int					actual,
+	int64_t					expected,
+	int64_t					actual,
 	int					line,
 	const char			*file,
 	const char			*func
@@ -453,8 +453,8 @@ planck_unit_assert_int_are_equal(
 planck_unit_result_t
 planck_unit_assert_int_are_not_equal(
 	planck_unit_test_t	*state,
-	int					expected,
-	int					actual,
+	int64_t					expected,
+	int64_t					actual,
 	int					line,
 	const char			*file,
 	const char			*func

@@ -28,6 +28,10 @@
 #ifndef PLANCKUNIT_H
 #define PLANCKUNIT_H
 
+#if defined(ARDUINO)
+#include "serial_c_iface.h"
+#endif
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -35,12 +39,10 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/* If this is any sort of workstation system, don't include Arduino junk. */
-/* #if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN)) */
-/* If we are compiling for the arduino, include the serial interface
- * and overwrite filename constant to be blank to save memory. */
+#include <setjmp.h>
+#include "ion_time/ion_time.h"
+/* If we are compiling for the arduino, overwrite filename constant to be blank to save memory. */
 #if defined(ARDUINO)
-#include "serial_c_iface.h"
 #if defined(__FILE__)
 #undef __FILE__
 #define __FILE__ ""
@@ -59,8 +61,8 @@ extern "C" {
 #if !defined(PLANCK_UNIT_OUTPUT_STYLE_JSON) && !defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN) && \
 	!defined (PLANCK_UNIT_OUTPUT_STYLE_XML) && !defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
 /*#define PLANCK_UNIT_OUTPUT_STYLE_JSON*/
-/*#define PLANCK_UNIT_OUTPUT_STYLE_HUMAN*/
-#define PLANCK_UNIT_OUTPUT_STYLE_XML
+#define PLANCK_UNIT_OUTPUT_STYLE_HUMAN
+/* #define PLANCK_UNIT_OUTPUT_STYLE_XML */
 /*#define PLANCK_UNIT_OUTPUT_STYLE_CONCISE*/
 #endif
 
@@ -70,6 +72,12 @@ extern "C" {
 #if !defined(NULL)
 #define NULL ((void *) 0)
 #endif
+
+/**
+@brief		This is used to the jump environment used to exit,
+			in the case of a failed assertion.
+*/
+extern jmp_buf planck_unit_longjmp_env;
 
 /**
 @brief		An assertion result, either a success or a failure.
@@ -110,24 +118,24 @@ typedef struct planck_unit_suite planck_unit_suite_t;
 */
 typedef struct planck_unit_print_functions {
 	/**> Print the result of a single test execution. This method
-	     has access to all relevant information for a test suite. */
+		 has access to all relevant information for a test suite. */
 	void (*print_result)(
 		planck_unit_test_t *
 	);
 
 	/**> If the output format requires some setup pre-execution
-	     (such as the case for JSON), then this function can accomplish
-	     this. Whatever is printed here is output before any tests are
-	     executed. */
+		 (such as the case for JSON), then this function can accomplish
+		 this. Whatever is printed here is output before any tests are
+		 executed. */
 	void (*print_preamble)(
 		planck_unit_suite_t *suite
 	);
 
 	/**> Following all tests have been executed, this function
-	     can optionally print any final information. A summary
-	     of the test results, for instance, can be printed,
-	     as all information from the entire suite's execution is
-	     available. */
+		 can optionally print any final information. A summary
+		 of the test results, for instance, can be printed,
+		 as all information from the entire suite's execution is
+		 available. */
 	void (*print_postamble)(
 		planck_unit_suite_t *
 	);
@@ -291,7 +299,7 @@ planck_unit_print_postamble_concise(
 );
 
 /**
-@brief      Concise-output printing functions for easy reference.
+@brief	  Concise-output printing functions for easy reference.
 */
 extern planck_unit_print_funcs_t planck_unit_print_funcs_concise;
 
@@ -299,12 +307,12 @@ extern planck_unit_print_funcs_t planck_unit_print_funcs_concise;
 #endif
 
 /**
-@brief      Utility functions to check whether a test case
+@brief	  Utility functions to check whether a test case
 			will be able to run properly in its environment.
 */
 typedef struct planck_unit_check_functions {
 	/**> Check whether enough memory space is available for a
-	     test's output to be defined and printed. */
+		 test's output to be defined and printed. */
 	int (*planck_unit_check_enough_space)(
 		const char	*message,
 		void		*expected,
@@ -357,17 +365,17 @@ planck_unit_check_int_space(
 */
 struct planck_unit_suite {
 	/**> The print functions used to format the result
-	     of the suite's execution. */
+		 of the suite's execution. */
 	planck_unit_print_funcs_t	print_functions;
 	/**> The total number of tests attempted. This number
-	     includes both those passed and those failed. */
+		 includes both those passed and those failed. */
 	int							total_tests;
 	/**> The total number of tests passed. */
 	int							total_passed;
 	/**> The first test to execute. */
 	planck_unit_test_t			*head;
 	/**> The last test to execute. Used to append new tests
-	     to execute to the suite. */
+		 to execute to the suite. */
 	planck_unit_test_t			*tail;
 };
 
@@ -378,7 +386,7 @@ struct planck_unit_suite {
 				of the function this pointer is associated with.
 */
 typedef void (*planck_unit_test_func_t)(
-	planck_unit_test_t 	*test
+	planck_unit_test_t *test
 );
 
 /**
@@ -392,33 +400,34 @@ struct planck_unit_test {
 	/**> The result of the test function's execution. */
 	planck_unit_result_t result;
 	/**> The line in the file at which the function failed.
-	     If the test passes all assertions, this will be set
-	     to @c -1. */
+		 If the test passes all assertions, this will be set
+		 to @c -1. */
 	int			line;
 	/**> The name of the file to which a failing test belongs.
-	     Otherwise will be set to the empty string, @c "". */
+		 Otherwise will be set to the empty string, @c "". */
 	const char	*file;
-	/**> If the test failed, this will be set to the name of the
-	     test function which failed. Otherwise this will be set
-	     to the empty string, @c "". */
-	const char *func_name;
+	/**> This is set to the function name of the
+		 last assertion in a test case. */
+	const char	*func_name;
+	/**> This is set to the initial entry point of a test case. */
+	const char	*base_name;
 	/**> If the test failed, a failure message describing
-	     the assertion that failed will be contained here.
-	     Otherwise, this will point to the empty string, "". */
+		 the assertion that failed will be contained here.
+		 Otherwise, this will point to the empty string, "". */
 	char					*message;
 	/**> The test function pointer that is to be or that was
-	     executed. */
+		 executed. */
 	planck_unit_test_func_t test_func;
 	/**> The pointer to the next suite in the test to be executed. */
 	planck_unit_test_t		*next;
 	/**> The suite to which this test belongs. */
 	planck_unit_suite_t		*suite;
 	/**> Whether or not the message was allocated. If the message is
-	     allocated, the message will be immediately freed once the
-	     execution has completed. */
-	char allocated_message;
+		 allocated, the message will be immediately freed once the
+		 execution has completed. */
+	char			allocated_message;
 	/**> The pointer to the number of milliseconds taken to execute the function. */
-	double					total_time;
+	unsigned long	total_time;
 };
 
 /* Do not call these methods directly, but instead use public macros below. */
@@ -567,7 +576,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_TRUE(state, condition) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE__, __FILE__, __func__, "condition was false, expected true")) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -583,19 +592,19 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_FALSE(state, condition) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), !(condition), __LINE__, __FILE__, __func__, "condition was true, expected false")) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
 @brief		Auto-fail a test.
 
-@param      state
+@param	  state
 				The test's state information tracking
 				the result of the test.
 */
 #define PLANCK_UNIT_SET_FAIL(state) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted to fail")) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -610,7 +619,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -626,7 +635,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_not_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -642,7 +651,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 /**
@@ -660,7 +669,7 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_STR_ARE_NOT_EQUAL(state, expected, actual) \
 	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_not_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
-		return; \
+		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
 #ifdef  __cplusplus

@@ -3,8 +3,8 @@
 @file
 @author		Dana Klamut
 @brief		A simple time API used to determine the length of time required
- 			to run PlanckUnit tests, regardless of the operating
- 			system being used.
+			to run PlanckUnit tests, regardless of the operating
+			system being used.
 @license	Licensed under the Apache License, Version 2.0 (the "License");
 			you may not use this file except in compliance with the License.
 			You may obtain a copy of the License at
@@ -24,16 +24,17 @@
 #define PLANCKUNIT_ION_TIME_H
 
 #if defined(ARDUINO)
-#include <Time.h>
+#include <Arduino.h>
+#endif
 
-#elif defined(WIN32)||defined(_WIN32)||defined(__WIN32)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #include <Windows.h>
 #include <time.h>
 
-#elif defined (__unix__)||defined(__APPLE__)&&defined (__MACH__)
+#elif defined (__unix__) || defined(__APPLE__) && defined (__MACH__)
 #include <time.h>
 
-#elif defined (__MACH__)&& defined(__APPLE__)
+#elif defined (__MACH__) && defined(__APPLE__)
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 
@@ -45,42 +46,8 @@
 @brief		A general time function that can be used by any operating system.
 @returns	Current time in milliseconds.
 */
-double
-ion_time();
+unsigned long
+ion_time(
+);
 
-/**
-@brief		A time function designed for Arduinos.
-@returns	Current time in milliseconds.
-*/
-double
-arduino_time();
-
-/**
-@brief		A time function designed for Windows operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-windows_time();
-
-/**
-@brief		A time function designed for Unix operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-unix_time();
-
-/**
-@brief		A time function designed for Mach operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-mach_time();
-
-/**
-@brief		A time function designed for Cygwin operating systems.
-@returns	Current time in milliseconds.
-*/
-double
-cygwin_time();
-
-#endif //PLANCKUNIT_ION_TIME_H
+#endif /* PLANCKUNIT_ION_TIME_H */

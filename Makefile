@@ -50,15 +50,19 @@ all: init_dirs $(BUILD_DIR)/Makefile
 
 .PHONY: test
 test: init_dirs $(SCRIPTS_DIR)/runalltests.py
-	cd $(TEST_BIN_DIR) ; python ../../dotfiles/scripts/runalltests.py
+	cd $(TEST_BIN_DIR) ; $(PY) ../../dotfiles/scripts/runalltests.py
 
 # Utility goals for scripts and such.
+.PHONY: setup
+setup:
+	git submodule init
+	git submodule update --remote --merge
 
 .PHONY: hooks
-hooks: $(SCRIPTS_DIR)/setuprepo.py
+hooks: $(SCRIPTS_DIR)/setuphooks.py
 	$(PY) $(SCRIPTS_DIR)/setuphooks.py
 
 .PHONY: format
 format: $(SCRIPTS_DIR)/format.py
-	$(PY) $(SCRIPTS_DIR)/format.py
+	$(PY) $(SCRIPTS_DIR)/format.py src
 ################################################################################

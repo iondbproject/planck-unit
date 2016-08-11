@@ -138,6 +138,8 @@ void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
+
+
 	printf("<test>line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lf\",message:\"%s\"</test>\n", state->line, state->file, state->func_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 }
@@ -587,7 +589,8 @@ void
 planck_unit_add_to_suite(
 	planck_unit_suite_t		*suite,
 	planck_unit_test_func_t test_func,
-	char *func_name
+	char *func_name,
+	const char			*file
 ) {
 	planck_unit_test_t *next;
 
@@ -603,6 +606,10 @@ planck_unit_add_to_suite(
 	next->suite				= suite;
 	next->allocated_message = 0;
 	next->func_name			= func_name;
+	next->line				= -1;
+	next->file				= file;
+	next->message			= "";
+	next->result			= PLANCK_UNIT_SUCCESS;
 
 	if (NULL == suite->head) {
 		suite->tail = next;

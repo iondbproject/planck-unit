@@ -526,10 +526,11 @@ void
 planck_unit_add_to_suite(
 	planck_unit_suite_t		*suite,
 	planck_unit_test_func_t test_func,
-	char *func_name
+	char *func_name,
+	const char			*file
 );
 
-#define PLANCK_UNIT_ADD_TO_SUITE(suite, test_func) planck_unit_add_to_suite((suite), (test_func), #test_func)
+#define PLANCK_UNIT_ADD_TO_SUITE(suite, test_func) planck_unit_add_to_suite((suite), (test_func), #test_func, __FILE__)
 
 /**
 @brief		Execute the test suite.

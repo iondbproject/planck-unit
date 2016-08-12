@@ -444,8 +444,8 @@ planck_unit_assert_true(
 planck_unit_result_t
 planck_unit_assert_int_are_equal(
 	planck_unit_test_t	*state,
-	int					expected,
-	int					actual,
+	int64_t					expected,
+	int64_t					actual,
 	int					line,
 	const char			*file,
 	const char			*func
@@ -454,8 +454,8 @@ planck_unit_assert_int_are_equal(
 planck_unit_result_t
 planck_unit_assert_int_are_not_equal(
 	planck_unit_test_t	*state,
-	int					expected,
-	int					actual,
+	int64_t					expected,
+	int64_t					actual,
 	int					line,
 	const char			*file,
 	const char			*func
@@ -535,10 +535,11 @@ void
 planck_unit_add_to_suite(
 	planck_unit_suite_t		*suite,
 	planck_unit_test_func_t test_func,
-	char					*func_name
+	char *func_name,
+	const char			*file
 );
 
-#define PLANCK_UNIT_ADD_TO_SUITE(suite, test_func) planck_unit_add_to_suite((suite), (test_func), # test_func)
+#define PLANCK_UNIT_ADD_TO_SUITE(suite, test_func) planck_unit_add_to_suite((suite), (test_func), #test_func, __FILE__)
 
 /**
 @brief		Execute the test suite.

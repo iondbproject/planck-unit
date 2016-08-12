@@ -40,6 +40,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
+#include <stdint.h>
 #include "ion_time/ion_time.h"
 /* If we are compiling for the arduino, overwrite filename constant to be blank to save memory. */
 #if defined(ARDUINO)

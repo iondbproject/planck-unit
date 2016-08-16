@@ -153,7 +153,6 @@ planck_unit_print_result_xml(
 	printf("\",message:\"");
 	printf("%s", state->message);
 	printf("\"</test>\n");
-	PLANCK_UNIT_PRINT_NEWLINE;
 	PLANCK_UNIT_FLUSH;
 }
 
@@ -164,21 +163,27 @@ planck_unit_print_preamble_xml(
 	planck_unit_test_t	*state;
 	int					test_count = 0;
 
+	PLANCK_UNIT_PRINT_STR("<suite>\n");
 	PLANCK_UNIT_PRINT_STR("<planckmeta>\n");
 
 	state = suite->head;
 
 	while (NULL != state) {
 		test_count++;
-		printf("<testname>%s</testname>\n", state->base_name);
+		printf("<testname>");
+		printf("%s", state->base_name);
+		printf("</testname>\n";
 		PLANCK_UNIT_FLUSH;
 
 		state = state->next;
 	}
 
-	printf("<testcount>%d</testcount>\n", test_count);
+	printf("<testcount>");
+	printf("%d", test_count);
+	printf("</testcount>\n");
 	PLANCK_UNIT_FLUSH;
 	PLANCK_UNIT_PRINT_STR("</planckmeta>\n");
+	PLANCK_UNIT_FLUSH;
 }
 
 void
@@ -192,6 +197,7 @@ planck_unit_print_postamble_xml(
 	printf("\"</summary>\n");
 	PLANCK_UNIT_FLUSH;
 	PLANCK_UNIT_PRINT_STR("</suite>\n");
+	PLANCK_UNIT_FLUSH;
 }
 
 planck_unit_print_funcs_t planck_unit_print_funcs_xml = {
@@ -274,7 +280,7 @@ planck_unit_check_string_space(
 
 	char buf[expected_size+5];
 
-	return snprintf(buf, expected_size, message, expected, actual);
+	return snprintf(buf, expected_size+5, message, expected, actual);
 }
 
 int

@@ -172,7 +172,7 @@ planck_unit_print_preamble_xml(
 		test_count++;
 		printf("<testname>");
 		printf("%s", state->base_name);
-		printf("</testname>\n";
+		printf("</testname>\n");
 		PLANCK_UNIT_FLUSH;
 
 		state = state->next;

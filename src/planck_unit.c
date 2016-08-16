@@ -55,7 +55,7 @@ void
 planck_unit_print_result_json(
 	planck_unit_test_t *state
 ) {
-	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"function\":\"%s\",\"time\":\"%lu\",\"message\":\"%s\"}", state->line, state->file, state->func_name, state->total_time, state->message);
+	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"test name\":\"%s\",\"time\":\"%lu\",\"message\":\"%s\"}", state->line, state->file, state->base_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 
 	if (NULL != state->next) {
@@ -93,7 +93,7 @@ planck_unit_print_result_human(
 		return;
 	}
 
-	printf("FAILURE: in function '%s' (%s), at %s:%d: %s, time: %lu ms\n", state->func_name, state->base_name, state->file, state->line, state->message, state->total_time);
+	printf("FAILURE: in function '%s', at %s:%d: %s, time: %lu ms\n", state->base_name, state->file, state->line, state->message, state->total_time);
 }
 
 void
@@ -142,7 +142,18 @@ void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
-	printf("<test>name:\"%s\",line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lu\",message:\"%s\"</test>\n", state->base_name, state->line, state->file, state->func_name, state->total_time, state->message);
+	printf("<test>name:\"");
+	printf("%s", state->base_name);
+	printf("\",line:\"");
+	printf("%d", state->line);
+	printf("\",file:\"");
+	printf("%s", state->file);
+	printf("\",time:\"");
+	printf("%lu", state->total_time);
+	printf("\",message:\"");
+	printf("%s", state->message);
+	printf("\"</test>\n");
+	PLANCK_UNIT_PRINT_NEWLINE;
 	PLANCK_UNIT_FLUSH;
 }
 
@@ -174,7 +185,11 @@ void
 planck_unit_print_postamble_xml(
 	planck_unit_suite_t *suite
 ) {
-	printf("<summary>total_tests:\"%d\",total_passed:\"%d\"</summary>\n", suite->total_tests, suite->total_passed);
+	printf("<summary>total_tests:\"");
+	printf("%d", suite->total_tests);
+	printf("\",total_passed:\"");
+	printf("%d", suite->total_passed);
+	printf("\"</summary>\n");
 	PLANCK_UNIT_FLUSH;
 	PLANCK_UNIT_PRINT_STR("</suite>\n");
 }
@@ -192,7 +207,7 @@ planck_unit_print_result_concise(
 	planck_unit_test_t *state
 ) {
 	printf("[");
-	printf("%s", state->func_name);
+	printf("%s", state->base_name);
 	printf(": ");
 
 	if (PLANCK_UNIT_SUCCESS == state->result) {
@@ -251,13 +266,15 @@ planck_unit_check_string_space(
 	void		*expected,
 	void		*actual
 ) {
-	int message_size;
+	int expected_size;
 
-	message_size	= strlen(message);
-	message_size	+= strlen((char *) expected);
-	message_size	+= strlen((char *) actual);
+	expected_size	= strlen(message);
+	expected_size	+= strlen((char *) expected);
+	expected_size	+= strlen((char *) actual);
 
-	return message_size;
+	char buf[expected_size];
+
+	return snprintf(buf, expected_size, message, expected, actual);
 }
 
 int
@@ -370,7 +387,7 @@ planck_unit_assert_true(
 
 	state->line			= line;
 	state->file			= file;
-	state->func_name	= func;
+	state->base_name	= func;
 	state->message		= message;
 
 	return state->result;
@@ -602,7 +619,6 @@ planck_unit_add_to_suite(
 	next->next				= NULL;
 	next->suite				= suite;
 	next->allocated_message = 0;
-	next->func_name			= func_name;
 	next->line				= -1;
 	next->file				= file;
 	next->message			= "";

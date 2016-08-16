@@ -407,9 +407,6 @@ struct planck_unit_test {
 	/**> The name of the file to which a failing test belongs.
 		 Otherwise will be set to the empty string, @c "". */
 	const char	*file;
-	/**> This is set to the function name of the
-		 last assertion in a test case. */
-	const char	*func_name;
 	/**> This is set to the initial entry point of a test case. */
 	const char	*base_name;
 	/**> If the test failed, a failure message describing

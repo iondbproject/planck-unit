@@ -163,7 +163,6 @@ planck_unit_print_preamble_xml(
 	planck_unit_test_t	*state;
 	int					test_count = 0;
 
-	PLANCK_UNIT_PRINT_STR("<suite>\n");
 	PLANCK_UNIT_PRINT_STR("<planckmeta>\n");
 
 	state = suite->head;

@@ -272,7 +272,7 @@ planck_unit_check_string_space(
 	expected_size	+= strlen((char *) expected);
 	expected_size	+= strlen((char *) actual);
 
-	char buf[expected_size];
+	char buf[expected_size+5];
 
 	return snprintf(buf, expected_size, message, expected, actual);
 }

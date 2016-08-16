@@ -271,7 +271,7 @@ planck_unit_check_string_space(
 	void		*expected,
 	void		*actual
 ) {
-	int expected_size;
+	int expected_size = 0;
 
 	expected_size	= strlen(message);
 	expected_size	+= strlen((char *) expected);

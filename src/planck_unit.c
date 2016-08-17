@@ -542,7 +542,7 @@ planck_unit_assert_str_are_equal(
 	message						= "expected \\\"%s\\\", got \\\"%s\\\"";
 	state->allocated_message	= 1;
 	message_size				= planck_unit_check_string_space(message, expected, actual);
-	buffer						= malloc(message_size);
+	buffer						= malloc(message_size+1);
 
 	if ((NULL == buffer) || !message_size) {
 		free(buffer);

@@ -271,9 +271,18 @@ planck_unit_check_string_space(
 	void		*expected,
 	void		*actual
 ) {
-	char buf[256];
+	int message_size;
 
-	return snprintf(buf, 256, message, expected, actual);
+	message_size	= strlen(message);
+	message_size	+= strlen((char *) expected);
+	message_size	+= strlen((char *) actual);
+
+	char *buf = malloc(message_size);
+
+	message_size = snprintf(buf, message_size, message, expected, actual);
+	free(buf);
+
+	return message_size;
 }
 
 int

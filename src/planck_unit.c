@@ -440,7 +440,7 @@ planck_unit_assert_int_are_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, expected == actual, line, file, func, buffer);
+	return planck_unit_assert_true(state, expected == actual, line, file, buffer);
 }
 
 /**
@@ -488,7 +488,7 @@ planck_unit_assert_int_are_not_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, expected != actual, line, file, func, buffer);
+	return planck_unit_assert_true(state, expected != actual, line, file, buffer);
 }
 
 /**
@@ -535,7 +535,7 @@ planck_unit_assert_str_are_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, 0 == strcmp(expected, actual), line, file, func, buffer);
+	return planck_unit_assert_true(state, 0 == strcmp(expected, actual), line, file, buffer);
 }
 
 /**
@@ -583,7 +583,7 @@ planck_unit_assert_str_are_not_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, 0 != strcmp(expected, actual), line, file, func, buffer);
+	return planck_unit_assert_true(state, 0 != strcmp(expected, actual), line, file, buffer);
 }
 
 void

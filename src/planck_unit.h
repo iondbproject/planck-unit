@@ -438,7 +438,6 @@ planck_unit_assert_true(
 	int					condition,
 	int					line,
 	const char			*file,
-	const char			*func,
 	char				*message
 );
 
@@ -448,8 +447,7 @@ planck_unit_assert_int_are_equal(
 	int64_t					expected,
 	int64_t					actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 );
 
 planck_unit_result_t
@@ -458,8 +456,7 @@ planck_unit_assert_int_are_not_equal(
 	int64_t					expected,
 	int64_t					actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 );
 
 planck_unit_result_t
@@ -468,8 +465,7 @@ planck_unit_assert_str_are_equal(
 	char				*expected,
 	char				*actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 );
 
 planck_unit_result_t
@@ -478,8 +474,7 @@ planck_unit_assert_str_are_not_equal(
 	char				*expected,
 	char				*actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 );
 
 /******************************************************************************/

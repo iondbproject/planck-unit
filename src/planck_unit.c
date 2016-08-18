@@ -357,9 +357,6 @@ planck_unit_new_suite(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @param		message
 				A message describing why the assertion may have failed.
 				This will only be used if the assertion actually fails.
@@ -372,7 +369,6 @@ planck_unit_assert_true(
 	int					condition,
 	int					line,
 	const char			*file,
-	const char			*func,
 	char				*message
 ) {
 	if (condition) {
@@ -395,7 +391,6 @@ planck_unit_assert_true(
 
 	state->line			= line;
 	state->file			= file;
-	state->base_name	= func;
 	state->message		= message;
 
 	return state->result;
@@ -416,9 +411,6 @@ planck_unit_assert_true(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 			on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -428,8 +420,7 @@ planck_unit_assert_int_are_equal(
 	int64_t					expected,
 	int64_t					actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;
@@ -468,9 +459,6 @@ planck_unit_assert_int_are_equal(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 			on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -480,8 +468,7 @@ planck_unit_assert_int_are_not_equal(
 	int64_t					expected,
 	int64_t					actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;
@@ -520,9 +507,6 @@ planck_unit_assert_int_are_not_equal(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 			on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -532,8 +516,7 @@ planck_unit_assert_str_are_equal(
 	char				*expected,
 	char				*actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;
@@ -572,9 +555,6 @@ planck_unit_assert_str_are_equal(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 				on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -584,8 +564,7 @@ planck_unit_assert_str_are_not_equal(
 	char				*expected,
 	char				*actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;

@@ -407,6 +407,9 @@ struct planck_unit_test {
 	/**> The name of the file to which a failing test belongs.
 		 Otherwise will be set to the empty string, @c "". */
 	const char	*file;
+	/**> This is set to the function name of the
+	 last assertion in a test case. */
+	const char	*func_name;
 	/**> This is set to the initial entry point of a test case. */
 	const char	*base_name;
 	/**> If the test failed, a failure message describing
@@ -573,7 +576,7 @@ planck_unit_destroy_suite(
 				passes. Otherwise, the assertion fails.
 */
 #define PLANCK_UNIT_ASSERT_TRUE(state, condition) \
-	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE__, __FILE__, __func__, "condition was false, expected true")) { \
+	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE__, __FILE__, "condition was false, expected true")) { \
 		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
@@ -589,7 +592,7 @@ planck_unit_destroy_suite(
 				passes. Otherwise, the assertion fails.
 */
 #define PLANCK_UNIT_ASSERT_FALSE(state, condition) \
-	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), !(condition), __LINE__, __FILE__, __func__, "condition was true, expected false")) { \
+	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), !(condition), __LINE__, __FILE__, "condition was true, expected false")) { \
 		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
@@ -601,7 +604,7 @@ planck_unit_destroy_suite(
 				the result of the test.
 */
 #define PLANCK_UNIT_SET_FAIL(state) \
-	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted to fail")) { \
+	if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, "asserted to fail")) { \
 		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
@@ -616,7 +619,7 @@ planck_unit_destroy_suite(
 				The actual @c int value.
 */
 #define PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(state, expected, actual) \
-	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
+	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_equal((state), (expected), (actual), __LINE__, __FILE__)) { \
 		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
@@ -632,7 +635,7 @@ planck_unit_destroy_suite(
 				The actual @c int value.
 */
 #define PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(state, expected, actual) \
-	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_not_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
+	if (PLANCK_UNIT_FAILURE == planck_unit_assert_int_are_not_equal((state), (expected), (actual), __LINE__, __FILE__)) { \
 		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
@@ -648,7 +651,7 @@ planck_unit_destroy_suite(
 				A pointer to the actual string data.
 */
 #define PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(state, expected, actual) \
-	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
+	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_equal((state), (expected), (actual), __LINE__, __FILE__)) { \
 		longjmp(planck_unit_longjmp_env, 1); \
 	}
 
@@ -666,7 +669,7 @@ planck_unit_destroy_suite(
 				A pointer to the actual string data.
 */
 #define PLANCK_UNIT_ASSERT_STR_ARE_NOT_EQUAL(state, expected, actual) \
-	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_not_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) { \
+	if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_not_equal((state), (expected), (actual), __LINE__, __FILE__)) { \
 		longjmp(planck_unit_longjmp_env, 1); \
 	}
 

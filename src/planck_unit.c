@@ -627,6 +627,7 @@ planck_unit_add_to_suite(
 	next->next				= NULL;
 	next->suite				= suite;
 	next->allocated_message = 0;
+	next->func_name			= func_name;
 	next->line				= -1;
 	next->file				= file;
 	next->message			= "";

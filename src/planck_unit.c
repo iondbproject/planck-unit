@@ -142,18 +142,22 @@ void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
-	printf("<test>name:\"");
+	PLANCK_UNIT_PRINT_STR("<test>name:\"");
 	printf("%s", state->base_name);
-	printf("\",line:\"");
-	printf("%d", state->line);
-	printf("\",file:\"");
-	printf("%s", state->file);
-	printf("\",time:\"");
-	printf("%lu", state->total_time);
-	printf("\",message:\"");
-	printf("%s", state->message);
-	printf("\"</test>\n");
 	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",line:\"");
+	printf("%d", state->line);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",file:\"");
+	printf("%s", state->file);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",time:\"");
+	printf("%lu", state->total_time);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",message:\"");
+	printf("%s", state->message);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\"</test>\n");
 }
 
 void
@@ -169,34 +173,33 @@ planck_unit_print_preamble_xml(
 
 	while (NULL != state) {
 		test_count++;
-		printf("<testname>");
+		PLANCK_UNIT_PRINT_STR("<testname>");
 		printf("%s", state->base_name);
-		printf("</testname>\n");
 		PLANCK_UNIT_FLUSH;
+		PLANCK_UNIT_PRINT_STR("</testname>\n");
 
 		state = state->next;
 	}
 
-	printf("<testcount>");
+	PLANCK_UNIT_PRINT_STR("<testcount>");
 	printf("%d", test_count);
-	printf("</testcount>\n");
 	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("</testcount>\n");
 	PLANCK_UNIT_PRINT_STR("</planckmeta>\n");
-	PLANCK_UNIT_FLUSH;
 }
 
 void
 planck_unit_print_postamble_xml(
 	planck_unit_suite_t *suite
 ) {
-	printf("<summary>total_tests:\"");
+	PLANCK_UNIT_PRINT_STR("<summary>total_tests:\"");
 	printf("%d", suite->total_tests);
-	printf("\",total_passed:\"");
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",total_passed:\"");
 	printf("%d", suite->total_passed);
-	printf("\"</summary>\n");
 	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\"</summary>\n");
 	PLANCK_UNIT_PRINT_STR("</suite>\n");
-	PLANCK_UNIT_FLUSH;
 }
 
 planck_unit_print_funcs_t planck_unit_print_funcs_xml = {

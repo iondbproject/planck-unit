@@ -55,7 +55,7 @@ void
 planck_unit_print_result_json(
 	planck_unit_test_t *state
 ) {
-	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"function\":\"%s\",\"time\":\"%lu\",\"message\":\"%s\"}", state->line, state->file, state->func_name, state->total_time, state->message);
+	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"test name\":\"%s\",\"time\":\"%lu\",\"message\":\"%s\"}", state->line, state->file, state->base_name, state->total_time, state->message);
 	PLANCK_UNIT_FLUSH;
 
 	if (NULL != state->next) {
@@ -93,7 +93,7 @@ planck_unit_print_result_human(
 		return;
 	}
 
-	printf("FAILURE: in function '%s' (%s), at %s:%d: %s, time: %lu ms\n", state->func_name, state->base_name, state->file, state->line, state->message, state->total_time);
+	printf("FAILURE: in function '%s', at %s:%d: %s, time: %lu ms\n", state->base_name, state->file, state->line, state->message, state->total_time);
 }
 
 void
@@ -142,8 +142,22 @@ void
 planck_unit_print_result_xml(
 	planck_unit_test_t *state
 ) {
-	printf("<test>name:\"%s\",line:\"%d\",file:\"%s\",function:\"%s\",time:\"%lu\",message:\"%s\"</test>\n", state->base_name, state->line, state->file, state->func_name, state->total_time, state->message);
+	PLANCK_UNIT_PRINT_STR("<test>name:\"");
+	printf("%s", state->base_name);
 	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",line:\"");
+	printf("%d", state->line);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",file:\"");
+	printf("%s", state->file);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",time:\"");
+	printf("%lu", state->total_time);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",message:\"");
+	printf("%s", state->message);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\"</test>\n");
 }
 
 void
@@ -159,14 +173,18 @@ planck_unit_print_preamble_xml(
 
 	while (NULL != state) {
 		test_count++;
-		printf("<testname>%s</testname>\n", state->base_name);
+		PLANCK_UNIT_PRINT_STR("<testname>");
+		printf("%s", state->base_name);
 		PLANCK_UNIT_FLUSH;
+		PLANCK_UNIT_PRINT_STR("</testname>\n");
 
 		state = state->next;
 	}
 
-	printf("<testcount>%d</testcount>\n", test_count);
+	PLANCK_UNIT_PRINT_STR("<testcount>");
+	printf("%d", test_count);
 	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("</testcount>\n");
 	PLANCK_UNIT_PRINT_STR("</planckmeta>\n");
 }
 
@@ -174,8 +192,13 @@ void
 planck_unit_print_postamble_xml(
 	planck_unit_suite_t *suite
 ) {
-	printf("<summary>total_tests:\"%d\",total_passed:\"%d\"</summary>\n", suite->total_tests, suite->total_passed);
+	PLANCK_UNIT_PRINT_STR("<summary>total_tests:\"");
+	printf("%d", suite->total_tests);
 	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\",total_passed:\"");
+	printf("%d", suite->total_passed);
+	PLANCK_UNIT_FLUSH;
+	PLANCK_UNIT_PRINT_STR("\"</summary>\n");
 	PLANCK_UNIT_PRINT_STR("</suite>\n");
 }
 
@@ -192,7 +215,7 @@ planck_unit_print_result_concise(
 	planck_unit_test_t *state
 ) {
 	printf("[");
-	printf("%s", state->func_name);
+	printf("%s", state->base_name);
 	printf(": ");
 
 	if (PLANCK_UNIT_SUCCESS == state->result) {
@@ -251,13 +274,7 @@ planck_unit_check_string_space(
 	void		*expected,
 	void		*actual
 ) {
-	int message_size;
-
-	message_size	= strlen(message);
-	message_size	+= strlen((char *) expected);
-	message_size	+= strlen((char *) actual);
-
-	return message_size;
+	return snprintf(NULL, 0, message, expected, actual) + 1;
 }
 
 int
@@ -266,18 +283,7 @@ planck_unit_check_int_space(
 	void		*expected,
 	void		*actual
 ) {
-	/* This marks them as UNUSED */
-	(void) expected;
-	(void) actual;
-
-	int message_size;
-
-	message_size	= strlen(message);
-	/* Quick overestimate assuming each int is maximum length
-		(5 chars for 2-byte ints, or 10 chars for 4-byte ints) */
-	message_size	+= 2 * (4 * sizeof(int) + 2);
-
-	return message_size;
+	return snprintf(NULL, 0, message, *(int64_t *) expected, *(int64_t *) actual) + 1;
 }
 
 void
@@ -332,9 +338,6 @@ planck_unit_new_suite(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @param		message
 				A message describing why the assertion may have failed.
 				This will only be used if the assertion actually fails.
@@ -347,7 +350,6 @@ planck_unit_assert_true(
 	int					condition,
 	int					line,
 	const char			*file,
-	const char			*func,
 	char				*message
 ) {
 	if (condition) {
@@ -370,7 +372,6 @@ planck_unit_assert_true(
 
 	state->line			= line;
 	state->file			= file;
-	state->func_name	= func;
 	state->message		= message;
 
 	return state->result;
@@ -391,9 +392,6 @@ planck_unit_assert_true(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 			on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -403,8 +401,7 @@ planck_unit_assert_int_are_equal(
 	int64_t					expected,
 	int64_t					actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;
@@ -424,7 +421,7 @@ planck_unit_assert_int_are_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, expected == actual, line, file, func, buffer);
+	return planck_unit_assert_true(state, expected == actual, line, file, buffer);
 }
 
 /**
@@ -443,9 +440,6 @@ planck_unit_assert_int_are_equal(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 			on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -455,8 +449,7 @@ planck_unit_assert_int_are_not_equal(
 	int64_t					expected,
 	int64_t					actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;
@@ -476,7 +469,7 @@ planck_unit_assert_int_are_not_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, expected != actual, line, file, func, buffer);
+	return planck_unit_assert_true(state, expected != actual, line, file, buffer);
 }
 
 /**
@@ -495,9 +488,6 @@ planck_unit_assert_int_are_not_equal(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 			on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -507,8 +497,7 @@ planck_unit_assert_str_are_equal(
 	char				*expected,
 	char				*actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;
@@ -527,7 +516,7 @@ planck_unit_assert_str_are_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, 0 == strcmp(expected, actual), line, file, func, buffer);
+	return planck_unit_assert_true(state, 0 == strcmp(expected, actual), line, file, buffer);
 }
 
 /**
@@ -547,9 +536,6 @@ planck_unit_assert_str_are_equal(
 				The line at which the assertion is made.
 @param		file
 				The name of the file where the assertion is being made.
-@param		func
-				The name of the function in which the assertion
-				is being made.
 @returns	The result of the assertion, either @ref PLANCK_UNIT_SUCCESS
 				on success or @ref PLANCK_UNIT_FAILURE otherwise.
 */
@@ -559,8 +545,7 @@ planck_unit_assert_str_are_not_equal(
 	char				*expected,
 	char				*actual,
 	int					line,
-	const char			*file,
-	const char			*func
+	const char			*file
 ) {
 	const char	*message;
 	int			message_size;
@@ -579,7 +564,7 @@ planck_unit_assert_str_are_not_equal(
 
 	sprintf(buffer, message, expected, actual);
 
-	return planck_unit_assert_true(state, 0 != strcmp(expected, actual), line, file, func, buffer);
+	return planck_unit_assert_true(state, 0 != strcmp(expected, actual), line, file, buffer);
 }
 
 void

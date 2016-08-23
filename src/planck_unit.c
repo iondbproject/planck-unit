@@ -274,18 +274,7 @@ planck_unit_check_string_space(
 	void		*expected,
 	void		*actual
 ) {
-	int message_size;
-
-	message_size	= strlen(message);
-	message_size	+= strlen((char *) expected);
-	message_size	+= strlen((char *) actual);
-
-	char *buf = malloc(message_size);
-
-	message_size = snprintf(buf, message_size, message, expected, actual);
-	free(buf);
-
-	return message_size;
+	return snprintf(NULL, 0, message, expected, actual) + 1;
 }
 
 int
@@ -294,18 +283,7 @@ planck_unit_check_int_space(
 	void		*expected,
 	void		*actual
 ) {
-	/* This marks them as UNUSED */
-	(void) expected;
-	(void) actual;
-
-	int message_size;
-
-	message_size	= strlen(message);
-	/* Quick overestimate assuming each int is maximum length
-		(5 chars for 2-byte ints, or 10 chars for 4-byte ints) */
-	message_size	+= 2 * (4 * sizeof(int) + 2);
-
-	return message_size;
+	return snprintf(NULL, 0, message, *(int64_t *) expected, *(int64_t *) actual) + 1;
 }
 
 void
@@ -528,7 +506,7 @@ planck_unit_assert_str_are_equal(
 	message						= "expected \\\"%s\\\", got \\\"%s\\\"";
 	state->allocated_message	= 1;
 	message_size				= planck_unit_check_string_space(message, expected, actual);
-	buffer						= malloc(message_size+1);
+	buffer						= malloc(message_size);
 
 	if ((NULL == buffer) || !message_size) {
 		free(buffer);

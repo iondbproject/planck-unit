@@ -283,7 +283,7 @@ planck_unit_check_int_space(
 	void		*expected,
 	void		*actual
 ) {
-	return snprintf(NULL, 0, message, *(int64_t *) expected, *(int64_t *) actual) + 1;
+	return snprintf(NULL, 0, message, *(int32_t *) expected, *(int32_t *) actual) + 1;
 }
 
 void
@@ -398,8 +398,8 @@ planck_unit_assert_true(
 planck_unit_result_t
 planck_unit_assert_int_are_equal(
 	planck_unit_test_t	*state,
-	int64_t					expected,
-	int64_t					actual,
+	int32_t					expected,
+	int32_t					actual,
 	int					line,
 	const char			*file
 ) {
@@ -407,7 +407,7 @@ planck_unit_assert_int_are_equal(
 	int			message_size;
 	char		*buffer;
 
-	message						= "expected int %d, got %d";
+	message						= "expected int %ld, got %ld";
 
 	message_size				= planck_unit_check_int_space(message, &expected, &actual);
 	state->allocated_message	= 1;
@@ -446,8 +446,8 @@ planck_unit_assert_int_are_equal(
 planck_unit_result_t
 planck_unit_assert_int_are_not_equal(
 	planck_unit_test_t	*state,
-	int64_t					expected,
-	int64_t					actual,
+	int32_t					expected,
+	int32_t					actual,
 	int					line,
 	const char			*file
 ) {
@@ -455,7 +455,7 @@ planck_unit_assert_int_are_not_equal(
 	int			message_size;
 	char		*buffer;
 
-	message						= "expected not int %d, got %d";
+	message						= "expected not int %ld, got %ld";
 
 	message_size				= planck_unit_check_int_space(message, &expected, &actual);
 	state->allocated_message	= 1;

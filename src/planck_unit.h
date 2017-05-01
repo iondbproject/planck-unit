@@ -378,6 +378,9 @@ struct planck_unit_suite {
 	/**> The last test to execute. Used to append new tests
 		 to execute to the suite. */
 	planck_unit_test_t			*tail;
+	/**> The pointer to the total number of milliseconds
+	     taken to execute the suite. */
+	unsigned long				total_time;
 };
 
 /**
@@ -428,7 +431,7 @@ struct planck_unit_test {
 		 execution has completed. */
 	char			allocated_message;
 	/**> The pointer to the number of milliseconds taken to execute the function. */
-	unsigned long	total_time;
+	unsigned long	time;
 };
 
 /* Do not call these methods directly, but instead use public macros below. */

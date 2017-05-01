@@ -55,7 +55,7 @@ void
 planck_unit_print_result_json(
 	planck_unit_test_t *state
 ) {
-	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"test name\":\"%s\",\"time\":\"%lu\",\"message\":\"%s\"}", state->line, state->file, state->base_name, state->total_time, state->message);
+	printf("{\"error_at_line\":%d,\"file\":\"%s\",\"test name\":\"%s\",\"time\":\"%lu\",\"message\":\"%s\"}", state->line, state->file, state->base_name, state->time, state->message);
 	PLANCK_UNIT_FLUSH;
 
 	if (NULL != state->next) {
@@ -93,7 +93,7 @@ planck_unit_print_result_human(
 		return;
 	}
 
-	printf("FAILURE: in function '%s', at %s:%d: %s, time: %lu ms\n", state->base_name, state->file, state->line, state->message, state->total_time);
+	printf("FAILURE: in function '%s', at %s:%d: %s, time: %lu ms\n", state->base_name, state->file, state->line, state->message, state->time);
 }
 
 void
@@ -124,10 +124,13 @@ planck_unit_print_postamble_summary(
 		state = state->next;
 	}
 
-	printf("\n\nTotal Passed:\t%d\n", suite->total_passed);
+	printf("\n\nTotal Passed:\t\t%d\n", suite->total_passed);
 	PLANCK_UNIT_FLUSH;
 
-	printf("Total Tests:\t%d\n", suite->total_tests);
+	printf("Total Tests:\t\t%d\n", suite->total_tests);
+	PLANCK_UNIT_FLUSH;
+
+	printf("Total Time Spent:\t%lu ms\n", suite->total_time);
 	PLANCK_UNIT_FLUSH;
 }
 
@@ -152,7 +155,7 @@ planck_unit_print_result_xml(
 	printf("%s", state->file);
 	PLANCK_UNIT_FLUSH;
 	PLANCK_UNIT_PRINT_STR("\",time:\"");
-	printf("%lu", state->total_time);
+	printf("%lu", state->time);
 	PLANCK_UNIT_FLUSH;
 	PLANCK_UNIT_PRINT_STR("\",message:\"");
 	printf("%s", state->message);
@@ -629,7 +632,8 @@ planck_unit_run_suite(
 			suite->total_passed++;
 		}
 
-		state->total_time = end_time - start_time;
+		state->time = end_time - start_time;
+		suite->total_time = suite->total_time + state->time;
 		suite->print_functions.print_result(state);
 
 		if ((PLANCK_UNIT_FAILURE == state->result) && (1 == state->allocated_message)) {

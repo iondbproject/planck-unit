@@ -18,7 +18,7 @@ Please refer to the [LICENSE](LICENSE) file for more information.
 Contributors
 ------------
 
-Graeme Douglas, Dana Klamut, Eliana Wardle
+Graeme Douglas, Eliana Wardle
 
 Basic Terminology
 -----------------

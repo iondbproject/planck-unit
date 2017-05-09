@@ -614,6 +614,8 @@ planck_unit_run_suite(
 	planck_unit_test_t		*state;
 	volatile unsigned long	start_time, end_time;
 
+	suite->total_time = 0;
+
 	state = suite->head;
 
 	suite->print_functions.print_preamble(suite);
